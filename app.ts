@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import authRoute from "./src/routes/authRoute";
 
 const app = express();
 
@@ -7,8 +8,6 @@ app.use(express.json());
 app.use(cors());
 
 //ROUTES
-app.get("/:elo", (req, res) => {
-  res.send(req.params.elo);
-});
+app.use("/auth", authRoute);
 
 export default app;

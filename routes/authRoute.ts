@@ -1,8 +1,11 @@
 import express, { Request } from "express";
 import { IUserSchema, UserType } from "../types/userTypes";
 import User from "../models/userModel";
+import { checkUserExist } from "../controllers/registrationControllers";
 
 const authRoute = express.Router();
+
+authRoute.use("/registration", checkUserExist);
 
 authRoute.post(
   "/registration",

@@ -1,6 +1,6 @@
 import mongoose, { CallbackError } from "mongoose";
 import app from "./app";
-import { DB_URL } from "./endpoints.config";
+import { DB_URL } from "./src/config/endpoints.config";
 
 mongoose.connect(
   DB_URL,

@@ -7,7 +7,6 @@ export async function checkUserExist(
   res: Response,
   next: () => void
 ) {
-  console.log("HERE");
   try {
     const user = await User.findOne({ email: req.body.email });
     if (user) {

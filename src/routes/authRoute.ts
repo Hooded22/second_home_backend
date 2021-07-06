@@ -1,7 +1,7 @@
 import express, { Request } from "express";
 import { IUserSchema, UserType } from "../types/userTypes";
 import User from "../models/userModel";
-import { checkUserExist } from "../controllers/registrationControllers";
+import { checkUserExist } from "../controllers/authControllers";
 
 const authRoute = express.Router();
 

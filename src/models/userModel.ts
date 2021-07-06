@@ -11,11 +11,11 @@ import bcrypt from "bcrypt";
 interface IUser extends Document, IUserSchema {}
 
 const userSchema = new Schema<IUser>({
-  name: { type: String, require: true },
-  firstName: { type: String, require: true },
-  lastName: { type: String, require: true },
-  email: { type: String, require: true },
-  password: String,
+  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
 });
 
 const User = model<IUserSchema>("UserModel", userSchema);

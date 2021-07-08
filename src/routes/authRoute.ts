@@ -2,8 +2,10 @@ import express, { Request, Response } from "express";
 import { IUserSchema, UserType, UserLoginType } from "../types/userTypes";
 import User from "../models/userModel";
 import { checkUserExist } from "../controllers/authControllers";
-import { registerValidation } from "../utils/validations";
-import { hash } from 'bcrypt';
+import { loginValidation, registerValidation } from "../utils/validations";
+import { hash, compare } from 'bcrypt';
+
+//TODO: Write tests
 
 const authRoute = express.Router();
 
@@ -21,7 +23,6 @@ authRoute.post(
       userName: `${firstName} ${lastName}`,
       password: hashedPassword
     });
-    //Save user to db
     try {
       const result = await newUser.save();
       res.status(200).json(result);
@@ -30,6 +31,17 @@ authRoute.post(
     }
   }
 );
+
+authRoute.post('/login', async (req: Request<any, any, UserLoginType>, res: Response) => {
+  const { email, password } = req.body;
+  const { error } = loginValidation(req.body);
+  if (!!error) return res.status(400).send(error?.details[0].message);
+  const user = await checkUserExist(email);
+  if (!user) return res.status(400).send("Email or password is wrong");
+  const passwordIsValid = await compare(password, user.password);
+  if (!passwordIsValid) return res.status(400).send("Password is wrong");
+  res.status(200).send("Success");
+})
 
 
 

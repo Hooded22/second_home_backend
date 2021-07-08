@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { UserType } from '../types/userTypes';
+import { UserLoginType, UserType } from '../types/userTypes';
 
-const registrationSchema = Joi.object({
+const registrationSchema = Joi.object<UserType>({
     email: Joi.string()
         .email()
         .required(),
@@ -20,6 +20,19 @@ const registrationSchema = Joi.object({
         .required()
 });
 
+const loginSchema = Joi.object<UserLoginType>({
+    email: Joi.string()
+        .email()
+        .required(),
+    password: Joi.string()
+        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+        .required()
+})
+
 export const registerValidation = (user: UserType) => {
     return registrationSchema.validate(user);
+}
+
+export const loginValidation = (userCredentials: UserLoginType) => {
+    return loginSchema.validate(userCredentials);
 }

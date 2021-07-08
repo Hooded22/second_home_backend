@@ -1,22 +1,20 @@
 import express, { Request, Response } from "express";
-import { IUserSchema, UserType, UserLoginType } from "../types/userTypes";
+import { UserType, UserLoginType } from "../types/userTypes";
 import User from "../models/userModel";
-import { checkUserExist } from "../controllers/authControllers";
-import { loginValidation, registerValidation } from "../utils/validations";
-import { hash, compare } from 'bcrypt';
+import { checkUserExist, validateLoginCredentials, findUserByEmailAndPassword, validateRegisterCredentials } from "../controllers/authControllers";
+import { hash } from 'bcrypt';
+import { RegisterResponseLocalsType } from '../types/middlewaresTypes/authMiddlewaresTypes';
 
 //TODO: Write tests
 
 const authRoute = express.Router();
 
+authRoute.use('/registration', validateRegisterCredentials);
+authRoute.use('/registration', checkUserExist);
 authRoute.post(
   "/registration",
   async (req: Request<any, any, UserType>, res) => {
     const { email, firstName, lastName, password } = req.body;
-    const { error } = registerValidation(req.body);
-    const userAlreadyExist = await checkUserExist(email);
-    if (!!error) return res.status(400).send(error?.details[0].message);
-    if (userAlreadyExist) return res.status(400).send("User already exist.");
     const hashedPassword = await hash(password, 12);
     const newUser = new User({
       ...req.body,
@@ -32,15 +30,12 @@ authRoute.post(
   }
 );
 
-authRoute.post('/login', async (req: Request<any, any, UserLoginType>, res: Response) => {
-  const { email, password } = req.body;
-  const { error } = loginValidation(req.body);
-  if (!!error) return res.status(400).send(error?.details[0].message);
-  const user = await checkUserExist(email);
-  if (!user) return res.status(400).send("Email or password is wrong");
-  const passwordIsValid = await compare(password, user.password);
-  if (!passwordIsValid) return res.status(400).send("Password is wrong");
-  res.status(200).send("Success");
+
+authRoute.use('/login', validateLoginCredentials);
+authRoute.use('/login', findUserByEmailAndPassword)
+authRoute.post('/login', async (req: Request<any, any, UserLoginType>, res: Response<any, RegisterResponseLocalsType>) => {
+  if (!res.locals.user) return res.status(500).send("Unrecognized error!");
+  res.status(200).json(res.locals.user);
 })
 
 

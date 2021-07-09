@@ -8,19 +8,19 @@ import {
 import { IUserSchema } from "../types/userTypes";
 import bcrypt from "bcrypt";
 
-interface IUser extends Document, IUserSchema { }
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUserSchema>({
   userName: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
+  token: { type: String, required: false }
 });
 
 const User = model<IUserSchema>("UserModel", userSchema);
 
-userSchema.pre<IUser>('save', async function (next: any) {
+userSchema.pre<IUserSchema>('save', async function (next: any) {
   const user = this;
   if (!user.isModified("password")) {
     return next();

@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { UserLoginType, UserType } from '../types/userTypes';
+import { UserLoginType, IUser } from '../types/userTypes';
 
-const registrationSchema = Joi.object<UserType>({
+const registrationSchema = Joi.object<IUser>({
     email: Joi.string()
         .email()
         .required(),
@@ -29,7 +29,7 @@ const loginSchema = Joi.object<UserLoginType>({
         .required()
 })
 
-export const registerValidation = (user: UserType) => {
+export const registerValidation = (user: IUser) => {
     return registrationSchema.validate(user);
 }
 

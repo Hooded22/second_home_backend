@@ -10,3 +10,8 @@ export type UserType = {
 export interface IUserSchema extends UserType {
   userName: string;
 }
+
+export type UserLoginType = {
+  email: string;
+  password: string;
+}

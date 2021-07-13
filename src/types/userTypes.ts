@@ -1,5 +1,7 @@
 import { Document } from "mongoose";
 
+//TODO: Refactor: UserDetails -> IUser, IUserModel, UserCreateData, etc.
+
 
 export type UserDetailsType = {
   firstName: string;

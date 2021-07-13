@@ -22,7 +22,7 @@ export type FeedbackStatusesKeys = 0 | 10 | 20;
 
 export interface IFeedbackSchema extends IFeedback, Document {
     authorId: string;
-    getFeedbackAuthor: (this: IFeedbackSchema) => Promise<IUserSchema | null>;
+    getFeedbackAuthor: (this: IFeedbackSchema) => Promise<UserDetailsType | null>;
 }
 
 export interface IFeedbackModelMethods {

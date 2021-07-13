@@ -17,20 +17,15 @@ feedbackRoute.post('/', async (req: Request<any, any, ICreateFeedbackRequest>, r
     try {
         const result = await feedback.save();
         const { title, description, rate, creationDate, status } = result;
-        const feedbackAuthor = await result.getFeedbackAuthor();
-        if (!feedbackAuthor) return res.status(404).send("Author not found");
-        const { firstName, lastName, email } = feedbackAuthor;
+        const author = await result.getFeedbackAuthor();
+        if (!author) return res.status(404).send("Author not found");
         const resultData: IFeedbackResponseData = {
             title,
             description,
             rate,
             creationDate,
             status,
-            author: {
-                firstName,
-                lastName,
-                email
-            }
+            author
         }
         res.status(200).json(resultData);
     } catch (error) {

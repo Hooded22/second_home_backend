@@ -1,8 +1,16 @@
 import User from "../models/userModel";
 import { IFeedbackSchema } from "../types/feedbackTypes";
-import { IUserSchema } from "../types/userTypes";
+import { UserDetailsType } from "../types/userTypes";
 
-export async function getFeedbackAuthor(this: IFeedbackSchema): Promise<IUserSchema | null> {
+export async function getFeedbackAuthor(this: IFeedbackSchema): Promise<UserDetailsType | null> {
     const user = await User.findOne({ _id: this.authorId });
-    return user;
+    if (user) {
+        const { firstName, lastName, email } = user;
+        return {
+            firstName,
+            lastName,
+            email
+        }
+    }
+    return null;
 }

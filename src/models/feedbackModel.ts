@@ -8,7 +8,7 @@ const FeedbackSchema = new Schema<IFeedbackSchema, IFeedbackModel>({
     description: { type: String, required: false },
     rate: Number,
     creationDate: { type: Date, require: false, default: new Date() },
-    authorId: Number,
+    authorId: String,
     status: { type: Number, require: false, default: 0 }
 });
 

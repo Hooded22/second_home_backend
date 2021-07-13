@@ -8,7 +8,10 @@ function auth(req: Request, res: Response, next: NextFunction) {
     try {
         const tokenSecret: Secret = config.TOKEN_SECRET
         const verified = jwt.verify(token, tokenSecret);
-        res.locals.userId = verified;
+        if (!verified) {
+            res.status(403).send("Inactive token");
+        }
+        res.locals.user = verified;
         next();
     } catch (error) {
 

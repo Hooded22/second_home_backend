@@ -5,3 +5,12 @@ export async function findByStatus(this: IFeedbackModel, status: FeedbackStatuse
     const records = await this.find({ status: status });
     return records;
 }
+
+export async function modifyFeedbackStatus(this: IFeedbackModel, id: string, status: FeedbackStatusesKeys): Promise<IFeedbackSchema> {
+    try {
+        const result = await this.findOneAndUpdate({ _id: id }, { status: status });
+        return result;
+    } catch (error) {
+        return error;
+    }
+}

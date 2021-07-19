@@ -26,9 +26,30 @@ export interface IFeedbackSchema extends IFeedback, Document {
 }
 
 export interface IFeedbackModelMethods {
-    findByStatus: (this: IFeedbackModel, status: FeedbackStatusesKeys) => Promise<IFeedbackSchema[]>;
+    findByStatus: (
+        this: IFeedbackModel,
+        status: FeedbackStatusesKeys
+    ) => Promise<IFeedbackSchema[]>;
+    modifyFeedbackStatus: (
+        this: IFeedbackModel,
+        id: string,
+        status: FeedbackStatusesKeys
+    ) => Promise<IFeedbackSchema>;
 }
 
-export interface IFeedbackModel extends Model<IFeedbackSchema, any, IFeedbackModelMethods> {
-    findByStatus: (this: IFeedbackModel, status: FeedbackStatusesKeys) => Promise<IFeedbackSchema[]>;
+export interface IFeedbackModel
+    extends Model<IFeedbackSchema, any, IFeedbackModelMethods> {
+    findByStatus: (
+        this: IFeedbackModel,
+        status: FeedbackStatusesKeys
+    ) => Promise<IFeedbackSchema[]>;
+    modifyFeedbackStatus: (
+        this: IFeedbackModel,
+        id: string,
+        status: FeedbackStatusesKeys
+    ) => Promise<IFeedbackSchema>;
+}
+
+export interface IFeedbackFilters {
+    status: FeedbackStatusesKeys;
 }

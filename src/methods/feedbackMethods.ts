@@ -1,5 +1,6 @@
+import Feedback from "../models/feedbackModel";
 import User from "../models/userModel";
-import { IFeedbackSchema } from "../types/feedbackTypes";
+import { FeedbackStatusesKeys, IFeedbackSchema } from "../types/feedbackTypes";
 import { UserDetailsType } from "../types/userTypes";
 
 export async function getFeedbackAuthor(this: IFeedbackSchema): Promise<UserDetailsType | null> {
@@ -14,3 +15,4 @@ export async function getFeedbackAuthor(this: IFeedbackSchema): Promise<UserDeta
     }
     return null;
 }
+

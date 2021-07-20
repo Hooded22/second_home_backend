@@ -2,4 +2,5 @@
   "editor.formatOnSave": true,
   "editor.tabCompletion": "on",
   //"editor.snippetSuggestions": "top",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

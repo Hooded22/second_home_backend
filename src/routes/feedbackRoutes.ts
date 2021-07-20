@@ -50,21 +50,41 @@ feedbackRoute.get("/", async (req: Request<any, any, any, IFeedbackFilters>, res
     const { status } = req.query;
     try {
         if (status) {
-            const users = await Feedback.findByStatus(status)
-            return res.status(200).json(users);
+            const feedbacks = await Feedback.findByStatus(status)
+            return res.status(200).json(feedbacks);
         }
-        const users = await Feedback.findByStatus(status)
-        return res.status(200).json(users);
+        const feedbacks = await Feedback.find();
+        return res.status(200).json(feedbacks);
     } catch (error) {
         return res.send(400).send(error);
     }
 }
 );
 
-feedbackRoute.post('/confirmFeedback', async (req: Request<any, any, { id: string }>, res: Response) => {
+feedbackRoute.post('/confirm', async (req: Request<any, any, { id: string }>, res: Response) => {
     const { id } = req.body;
     try {
         const result = await Feedback.modifyFeedbackStatus(id, 10);
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+})
+
+feedbackRoute.post('/reject', async (req: Request<any, any, { id: string }>, res: Response) => {
+    const { id } = req.body;
+    try {
+        const result = await Feedback.modifyFeedbackStatus(id, 20);
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+})
+
+feedbackRoute.delete('/', async (req: Request<any, any, { id: string }>, res: Response) => {
+    const { id } = req.body;
+    try {
+        const result = await Feedback.findByIdAndDelete(id);
         return res.status(200).json(result);
     } catch (error) {
         return res.status(400).send(error)

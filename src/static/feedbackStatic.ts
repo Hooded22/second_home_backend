@@ -8,7 +8,7 @@ export async function findByStatus(this: IFeedbackModel, status: FeedbackStatuse
 
 export async function modifyFeedbackStatus(this: IFeedbackModel, id: string, status: FeedbackStatusesKeys): Promise<IFeedbackSchema> {
     try {
-        const result = await this.findOneAndUpdate({ _id: id }, { status: status });
+        const result = await this.findOneAndUpdate({ _id: id }, { status: status }, { new: true });
         return result;
     } catch (error) {
         return error;

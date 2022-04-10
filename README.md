@@ -1,6 +1,6 @@
 # Second Home hotel app - REST API
-This project is my first REST API created in node.js with express.  
-It will be a backend for my side project (Second Home mobile app) in the future but now is still in progress.
+This project is my first REST API created in node.js with express.
+I'm using it to try new things with node.js.
 
 ## What include 💻
 - Wrote with typescript

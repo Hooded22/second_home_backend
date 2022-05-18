@@ -1,4 +1,4 @@
-enum RoomStadard {
+export enum RoomStandard {
     STANDARD = "STANDARD",
     PREMIUM = "PREMIUM",
     GOLD = "GOLD"
@@ -8,8 +8,12 @@ enum RoomStadard {
 export interface IRoom {
     number: number,
     floor: number,
-    standard: RoomStadard,
+    standard: RoomStandard,
     beds: number,
+}
+
+export interface IRoomInDatabase extends IRoom {
+    id: string;
 }
 
 export interface IRoomSchema extends IRoom, Document {}

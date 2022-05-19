@@ -1,7 +1,5 @@
 import { Schema, model } from "mongoose";
-import {
-  getFeedbackAuthor,
-} from "../methods/feedbackMethods";
+import { getFeedbackAuthor } from "../methods/feedbackMethods";
 import { findByStatus, modifyFeedbackStatus } from "../static/feedbackStatic";
 import { IFeedbackModel, IFeedbackSchema } from "../types/feedbackTypes";
 

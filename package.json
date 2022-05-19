@@ -8,7 +8,10 @@
     "dev": "nodemon --exec ts-node server.ts",
     "test": "jest --watchAll",
     "test:coverage": "jest --watchAll --coverage",
-    "build": "tsc"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prettier-check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.ts\"",
+    "prettier-write": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.ts\""
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -24,6 +27,7 @@
     "nodemon": "^2.0.9",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "prettier": "^2.6.2",
     "supertest": "^6.2.3"
   },
   "devDependencies": {

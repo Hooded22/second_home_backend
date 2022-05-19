@@ -13,7 +13,7 @@ export interface IRoom {
 }
 
 export interface IRoomInDatabase extends IRoom {
-    id: string;
+    _id: string;
 }
 
 export interface IRoomSchema extends IRoom, Document {}

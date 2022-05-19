@@ -3,7 +3,8 @@ import auth from "./verifyToken";
 import { Router, Request, Response } from "express";
 import {isEmpty} from 'lodash';
 import { IRoom } from "../types/roomTypes";
-import {addRoomDataValidation, updateRoomDataValidation} from '../controllers/roomControllers'
+import {addRoomDataValidation, deleteRoomValidation, updateRoomDataValidation} from '../controllers/roomControllers'
+import errorMessages from "../assets/errorMessages";
 
 const roomRouter = Router();
 
@@ -13,13 +14,12 @@ roomRouter.post('/', addRoomDataValidation, async (
     req: Request<any, any, IRoom>,
     res: Response
 ) => {
-    const room = new Room(req.body);
     try {
+        const room = new Room(req.body);
         const savedRoom = await room.save();
         return res.status(200).json(savedRoom);
     } catch (error) {
-        console.error(error);
-        return res.status(400).send(error);
+        return res.status(400).send({error});
     }
 })
 
@@ -31,8 +31,7 @@ roomRouter.get('/', async (_: Request, res: Response) => {
         }
         return res.status(200).json(rooms);
     } catch(error) {
-        console.error(error);
-        return res.status(400).send("Error")
+        return res.status(400).send({error: errorMessages.findError})
     }
 })
 
@@ -50,12 +49,12 @@ roomRouter.put("/", updateRoomDataValidation, async (req: Request<any, any, Part
     }
 })
 
-roomRouter.delete("/", async (req: Request<any, any, any, {id: string}>, res: Response) => {
+roomRouter.delete("/", deleteRoomValidation, async (req: Request<any, any, any, {id: string}>, res: Response) => {
     try {
         await Room.findByIdAndDelete(req.query.id);
-        return res.status(200).send("Delete successfully")
+        return res.status(200).send({message: "Delete successfully"})
     } catch (error) {
-        return res.status(400).send("Incorect id");
+        return res.status(400).send({error: errorMessages.incorectId});
     }
 })
 

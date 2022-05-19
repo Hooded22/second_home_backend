@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import errorMessages from '../assets/errorMessages';
 import Room from '../models/roomModel';
 import { IRoom } from '../types/roomTypes';
 import {addRoomValidator} from  '../validators/roomValidators';
@@ -6,7 +7,7 @@ import {addRoomValidator} from  '../validators/roomValidators';
 async function validateRoomNumber(roomNumber: number) {
     const roomWithNumber = await Room.findOne({number: roomNumber});
     if(roomWithNumber) {
-        throw new Error("Room with this number already exist");
+        throw new Error(errorMessages.roomWithNumberAlreadyExist);
     } else {
         return;
     }
@@ -18,7 +19,7 @@ export async function addRoomDataValidation(req: Request<any, any, IRoom>, res: 
         await validateRoomNumber(req.body.number);
         next();
     } catch (error: any) {
-        return res.status(400).send(error.message);
+        return res.status(400).send({error: error.message});
     }   
 }
 
@@ -43,5 +44,13 @@ export async function updateRoomDataValidation(req: Request<any, any, Partial<IR
         }
     } catch(error: any) {
         return res.status(400).send(error.message);
+    }
+}
+
+export async function deleteRoomValidation(req: Request<any, any, any, {id: string}>, res: Response, next: NextFunction) {
+    if(!req.query.id) {
+        res.status(400).send({error: errorMessages.incorectId});
+    } else {
+        next();
     }
 }

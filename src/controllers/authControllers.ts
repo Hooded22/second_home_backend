@@ -1,7 +1,10 @@
 import { compare } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
+import errorMessages from "../assets/errorMessages";
+import { ac } from "../config/appConfig";
 import User from "../models/userModel";
-import { UserLoginType, IUser } from "../types/userTypes";
+import { UserLoginType, IUser, UserRoles, UserDetailsType } from "../types/userTypes";
+import CustomResponse from "../utils/CustomResponse";
 import { getUserByEmail } from "../utils/getUserByEmail";
 import { loginValidation, registerValidation } from "../utils/validations";
 
@@ -50,4 +53,21 @@ export async function findUserByEmailAndPassword(
 
 export async function saveUserToken(token: string, userId: string) {
   User.findOneAndUpdate({ _id: userId }, { token });
+}
+
+export async function validateGrandUserData(
+  req: Request<any, any, {userId: string, newRole: UserRoles}>,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user as UserDetailsType;
+  const permissions = ac.can(user.role || UserRoles.CUSTOMER).update('stuffPermissions')
+
+  try {
+    if(!permissions.granted) throw new Error(errorMessages.permissionDenied);
+    if(!req.body.userId || !req.body.newRole) throw new Error(errorMessages.internalError)
+    next();
+  } catch (error: any) {
+    return res.status(400).send(new CustomResponse(null, error).json());
+  }
 }

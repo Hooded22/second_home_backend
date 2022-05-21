@@ -24,7 +24,7 @@ function auth(req: Request, res: Response, next: NextFunction) {
     if (!verified) {
       res.status(403).send("Inactive token");
     }
-    res.locals.user = verified;
+    req.user = verified;
     next();
   } catch (error) {
     console.error("ERROR: ", error, token);

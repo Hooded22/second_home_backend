@@ -6,7 +6,14 @@ export type UserDetailsType = {
   firstName: string;
   lastName: string;
   email: string;
+  role?: UserRoles;
 };
+
+export enum UserRoles {
+  CUSTOMER = "user",
+  STUFF = "stuff",
+  MANAGER = "manager",
+}
 
 export interface IUser extends UserDetailsType {
   password: string;

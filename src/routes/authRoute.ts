@@ -1,5 +1,10 @@
 import express, { Request, Response } from "express";
-import { IUser, UserDetailsType, UserLoginType } from "../types/userTypes";
+import {
+  IUser,
+  UserDetailsType,
+  UserLoginType,
+  UserRoles,
+} from "../types/userTypes";
 import User from "../models/userModel";
 import {
   checkUserExist,
@@ -7,11 +12,15 @@ import {
   findUserByEmailAndPassword,
   validateRegisterCredentials,
   saveUserToken,
+  validateGrandUserData,
 } from "../controllers/authControllers";
 import { hash } from "bcrypt";
 import { RegisterResponseLocalsType } from "../types/middlewaresTypes/authMiddlewaresTypes";
 import { Secret, sign } from "jsonwebtoken";
-import config from "../config/appConfig";
+import config, { ac } from "../config/appConfig";
+import errorMessages from "../assets/errorMessages";
+import auth from "./verifyToken";
+import CustomResponse from "../utils/CustomResponse";
 
 //TODO: Write tests
 
@@ -57,6 +66,28 @@ authRoute.post(
       token,
       userDetails,
     });
+  }
+);
+
+authRoute.post(
+  "/grandUser",
+  auth,
+  validateGrandUserData,
+  async (
+    req: Request<any, any, { userId: string; newRole: UserRoles }>,
+    res: Response
+  ) => {
+    try {
+      const user = User.findByIdAndUpdate(req.body.userId, {
+        role: req.body.newRole,
+      });
+      if (!user) {
+        return res.status(400).send(errorMessages.incorectId);
+      }
+      res.status(200).send({ message: "User granded successfully" });
+    } catch (error) {
+      return res.status(400).send(errorMessages.incorectId);
+    }
   }
 );
 

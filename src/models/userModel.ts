@@ -5,7 +5,7 @@ import {
   Model,
   Document,
 } from "mongoose";
-import { IUserSchema } from "../types/userTypes";
+import { IUserSchema, UserRoles } from "../types/userTypes";
 import bcrypt from "bcrypt";
 
 const userSchema = new Schema<IUserSchema>({
@@ -15,6 +15,7 @@ const userSchema = new Schema<IUserSchema>({
   email: { type: String, required: true },
   password: { type: String, required: true },
   token: { type: String, required: false },
+  role: { type: String, default: UserRoles.CUSTOMER },
 });
 
 const User = model<IUserSchema>("UserModel", userSchema);

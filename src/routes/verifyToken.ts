@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 import jwt, { Secret } from "jsonwebtoken";
+import { User } from "../../custom";
 import config from "../config/appConfig";
 
 function extractToken(bearerToken: string | undefined) {
@@ -24,7 +25,7 @@ function auth(req: Request, res: Response, next: NextFunction) {
     if (!verified) {
       res.status(403).send("Inactive token");
     }
-    res.locals.user = verified;
+    req.user = verified as User;
     next();
   } catch (error) {
     console.error("ERROR: ", error, token);

@@ -65,9 +65,8 @@ export async function validateGrandUserData(
   res: Response,
   next: NextFunction
 ) {
-  const user = req.user as UserDetailsType;
   const permissions = ac
-    .can(user.role || UserRoles.CUSTOMER)
+    .can(req.user?.role || UserRoles.CUSTOMER)
     .update("stuffPermissions");
 
   try {

@@ -29,8 +29,6 @@ roomRouter.post(
 );
 
 roomRouter.get("/", async (req: Request, res: Response) => {
-  console.log("USER: ", req.user);
-
   try {
     const rooms = await Room.find();
     if (isEmpty(rooms)) {

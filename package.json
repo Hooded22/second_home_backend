@@ -11,10 +11,12 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "prettier-check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.ts\"",
-    "prettier-write": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.ts\""
+    "prettier-write": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.ts\"",
+    "git:add": "git add ."
   },
   "pre-commit": [
     "prettier-write",
+    "git:add",
     "typecheck"
   ],
   "dependencies": {

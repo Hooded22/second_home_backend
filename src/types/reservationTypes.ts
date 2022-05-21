@@ -1,23 +1,27 @@
 import { ICustomer } from "./customerTypes";
 import { IRoom } from "./roomTypes";
 
-enum ReservationStatuses {
-  OPEN = "",
-  CLOSED = "",
-  DELAYED = "",
-  CANCELED = "",
+export enum ReservationStatuses {
+  OPEN = "open",
+  CLOSED = "closed",
+  DELAYED = "delayd",
+  CANCELED = "canceled",
 }
 
 export interface IReservation {
-  customer: ICustomer;
+  customerId: string;
   startTime: Date;
   endTime: Date | null;
   status: ReservationStatuses;
   days: number;
   cost: number;
-  room: IRoom;
+  roomId: IRoom;
   cardNumber: number;
 }
+
+export type IReservationUpdateData = Partial<Omit<IReservation, "status">>;
+
+export type ReservationFilters = Partial<IReservation>;
 
 export type ReservationResponse = Omit<IReservation, "cardNumber">;
 

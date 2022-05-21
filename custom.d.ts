@@ -5,6 +5,7 @@ declare global {
     namespace Express {
         export interface User {
             role: UserDetailsType['role']
+            _id: string
         }
     }
 }

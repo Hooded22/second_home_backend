@@ -16,3 +16,5 @@ const Reservation = model<IReservationSceham>(
   "ReservationModel",
   reservationSchema
 );
+
+export default Reservation;

@@ -9,11 +9,12 @@ I'm using it to try new things with node.js.
 - Simple auth system
 - JWT token authentication
 - Feedbacks CRUD
+- Permissions and roles
+- Hotel rooms CRUD
+- Unit tests
 
 ## Coming soon 👨‍💻
 
-- Permissions and roles
-- Hotel rooms CRUD
 - Booking system
 - Using image storage
 - Integration tests

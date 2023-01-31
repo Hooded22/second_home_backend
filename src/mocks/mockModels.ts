@@ -1,4 +1,4 @@
-import { IRoomInDatabase, RoomStandard } from "../types/roomTypes";
+import { IRoomInDatabase, RoomStandard } from "../rooms/roomTypes";
 import { MOCK_ROOMS } from "./mockData";
 
 class DefaultModel {

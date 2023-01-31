@@ -7,7 +7,7 @@ import {
   IReservationSceham,
   ReservationStatuses,
 } from "../types/reservationTypes";
-import Room from "./roomModel";
+import Room from "../rooms/roomModel";
 
 const reservationSchema = new Schema<IReservationSceham>({
   customerId: { type: Schema.Types.ObjectId, ref: "CustomerModel" },

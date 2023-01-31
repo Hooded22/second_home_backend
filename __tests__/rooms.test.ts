@@ -3,8 +3,8 @@ import request from "supertest";
 import app from "../app";
 import errorMessages from "../src/assets/errorMessages";
 import { MOCK_ROOMS } from "../src/mocks/mockData";
-import Room from "../src/models/roomModel";
-import { IRoom, RoomStandard } from "../src/types/roomTypes";
+import Room from "../src/rooms/roomModel";
+import { IRoom, RoomStandard } from "../src/rooms/roomTypes";
 
 jest.mock("../src/routes/verifyToken", () =>
   jest.fn((req, res, next) => {

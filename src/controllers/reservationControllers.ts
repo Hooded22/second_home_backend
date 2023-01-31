@@ -11,7 +11,7 @@ import {
   validateAddReservationData,
   validateUpdateReservationData,
 } from "../validators/reservationValidators";
-import Room from "../models/roomModel";
+import Room from "../rooms/roomModel";
 
 export function getAllReservationsValidation(
   req: Request<any, any, any, ReservationFilters | undefined>,

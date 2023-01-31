@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { DEFAULT_PRICE_FOR_NIGHT } from "../assets/constants";
-import { IRoomSchema, RoomStandard } from "../types/roomTypes";
+import { IRoomSchema, RoomStandard } from "./roomTypes";
 
 const roomSchema = new Schema<IRoomSchema>({
   number: Schema.Types.Number,

@@ -1,5 +1,5 @@
 import { IReservation } from "../types/reservationTypes";
-import { IRoomInDatabase, RoomStandard } from "../types/roomTypes";
+import { IRoomInDatabase, RoomStandard } from "../rooms/roomTypes";
 
 export const MOCK_ROOMS: IRoomInDatabase[] = [
   {

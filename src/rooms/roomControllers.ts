@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import errorMessages from "../assets/errorMessages";
-import Room from "../models/roomModel";
-import { IRoom } from "../types/roomTypes";
+import Room from "./roomModel";
+import { IRoom } from "./roomTypes";
 import { addRoomValidator } from "../validators/roomValidators";
 
 async function validateRoomNumber(roomNumber: number) {

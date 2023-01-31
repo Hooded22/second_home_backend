@@ -1,4 +1,4 @@
-import { IReservation } from "./reservationTypes";
+import { IReservation } from "../reservation/types";
 
 export interface ICustomer {
   name: string;

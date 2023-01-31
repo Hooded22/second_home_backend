@@ -5,7 +5,7 @@ import {
   validateUpdateCustomerRequest,
 } from "../controllers/customerControllers";
 import Customer from "../models/customerModel";
-import Reservation from "../models/reservationModel";
+import Reservation from "../reservation/model";
 import { CustomerWithReservations, ICustomer } from "../types/customerTypes";
 import auth from "./verifyToken";
 

@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
-import { ICustomer } from "./customerTypes";
-import { IRoom } from "../rooms/roomTypes";
+import { ICustomer } from "../types/customerTypes";
+import { IRoom } from "../room/types";
 
 export enum ReservationStatuses {
   OPEN = "open",

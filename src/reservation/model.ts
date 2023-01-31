@@ -2,12 +2,8 @@ import { NextFunction } from "express";
 import { model, Schema, Types, ObjectId } from "mongoose";
 import { DEFAULT_PRICE_FOR_NIGHT } from "../assets/constants";
 import { calculateReservationDays } from "../methods/reservationMethods";
-import {
-  IReservation,
-  IReservationSceham,
-  ReservationStatuses,
-} from "../types/reservationTypes";
-import Room from "../rooms/roomModel";
+import { IReservation, IReservationSceham, ReservationStatuses } from "./types";
+import RoomModel from "../room/model";
 
 const reservationSchema = new Schema<IReservationSceham>({
   customerId: { type: Schema.Types.ObjectId, ref: "CustomerModel" },
@@ -23,7 +19,7 @@ reservationSchema.methods.calculateReservationDays = calculateReservationDays;
 reservationSchema.pre<IReservationSceham>("save", async function (next: any) {
   const reservation = this;
   try {
-    const room = await Room.findById(reservation.roomId);
+    const room = await RoomModel.findById(reservation.roomId);
     const days = this.calculateReservationDays();
     const cost = room ? room.price * days : DEFAULT_PRICE_FOR_NIGHT * days;
     this.cost = Math.round(cost);
@@ -39,7 +35,7 @@ reservationSchema.pre<IReservationSceham>(
   async function (next: any) {
     const reservation = this;
     try {
-      const room = await Room.findById(reservation.roomId);
+      const room = await RoomModel.findById(reservation.roomId);
       const days = this.calculateReservationDays();
       const cost = room ? room.price * days : DEFAULT_PRICE_FOR_NIGHT * days;
       this.cost = Math.round(cost);

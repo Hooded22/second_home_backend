@@ -2,7 +2,7 @@ import {
   IReservation,
   IReservationUpdateData,
   ReservationFilters,
-} from "../types/reservationTypes";
+} from "./types";
 import { NextFunction, Request, Response } from "express";
 import { ac } from "../config/appConfig";
 import { User } from "../../custom";
@@ -10,8 +10,8 @@ import errorMessages from "../assets/errorMessages";
 import {
   validateAddReservationData,
   validateUpdateReservationData,
-} from "../validators/reservationValidators";
-import Room from "../rooms/roomModel";
+} from "./validators";
+import RoomModel from "../room/model";
 
 export function getAllReservationsValidation(
   req: Request<any, any, any, ReservationFilters | undefined>,

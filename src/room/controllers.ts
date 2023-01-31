@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import errorMessages from "../assets/errorMessages";
-import Room from "./roomModel";
-import { IRoom } from "./roomTypes";
-import { addRoomValidator } from "../validators/roomValidators";
+import RoomModel from "./model";
+import { IRoom } from "./types";
+import { addRoomValidator } from "./validators";
 
 async function validateRoomNumber(roomNumber: number) {
-  const roomWithNumber = await Room.findOne({ number: roomNumber });
+  const roomWithNumber = await RoomModel.findOne({ number: roomNumber });
   if (roomWithNumber) {
     throw new Error(errorMessages.roomWithNumberAlreadyExist);
   } else {
@@ -33,7 +33,7 @@ export async function updateRoomDataValidation(
   next: NextFunction
 ) {
   try {
-    const room = await Room.findById(req.query.id);
+    const room = await RoomModel.findById(req.query.id);
     if (room) {
       const newData: IRoom = {
         number: room.number,

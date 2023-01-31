@@ -3,7 +3,7 @@ import {
   IReservation,
   IReservationSceham,
   ReservationResponse,
-} from "../types/reservationTypes";
+} from "../reservation/types";
 
 export function calculateReservationDays(this: IReservationSceham): number {
   return DateTime.fromJSDate(this.endTime).diff(

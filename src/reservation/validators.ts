@@ -3,7 +3,7 @@ import {
   IReservation,
   IReservationUpdateData,
   ReservationStatuses,
-} from "../types/reservationTypes";
+} from "./types";
 
 const addReservationValidationSchema = Joi.object({
   customerId: Joi.string().required(),

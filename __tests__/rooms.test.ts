@@ -3,8 +3,8 @@ import request from "supertest";
 import app from "../app";
 import errorMessages from "../src/assets/errorMessages";
 import { MOCK_ROOMS } from "../src/mocks/mockData";
-import Room from "../src/rooms/roomModel";
-import { IRoom, RoomStandard } from "../src/rooms/roomTypes";
+import RoomModel from "../src/room/model";
+import { IRoom, RoomStandard } from "../src/room/types";
 
 jest.mock("../src/routes/verifyToken", () =>
   jest.fn((req, res, next) => {
@@ -26,7 +26,7 @@ describe("Room endpoint tests", () => {
     expect(response.body).toEqual(MOCK_ROOMS);
   });
   test("GET /room return error when find() is rejected", async () => {
-    const mockRoomFind = jest.spyOn(Room, "find");
+    const mockRoomFind = jest.spyOn(RoomModel, "find");
     mockRoomFind.mockRejectedValueOnce({ error: "Test error" });
 
     const response = await request(app).get("/room").expect(400);
@@ -34,7 +34,7 @@ describe("Room endpoint tests", () => {
     expect(response.body.error).toEqual(errorMessages.findError);
   });
   test("GET /room shoudl return 404 when data dont exist", async () => {
-    const mockRoomFind = jest.spyOn(Room, "find");
+    const mockRoomFind = jest.spyOn(RoomModel, "find");
     mockRoomFind.mockReturnValueOnce([] as any);
 
     const response = await request(app).get("/room").expect(404);
@@ -57,7 +57,7 @@ describe("Room endpoint tests", () => {
     expect(response.body).toEqual(postData);
   });
   test("POST /room should return error when room with number already exist", async () => {
-    const mockRoomFindOne = jest.spyOn(Room, "findOne");
+    const mockRoomFindOne = jest.spyOn(RoomModel, "findOne");
     mockRoomFindOne.mockReturnValueOnce(MOCK_ROOMS[0] as any);
     const postData: IRoom = {
       beds: 2,
@@ -89,7 +89,10 @@ describe("Room endpoint tests", () => {
     expect(response.body.error).toEqual('"floor" is required');
   });
   test("DELETE /room should call findByIdAndDelete method with id of item", async () => {
-    const mockRoomFindByIdAndDelete = jest.spyOn(Room, "findByIdAndDelete");
+    const mockRoomFindByIdAndDelete = jest.spyOn(
+      RoomModel,
+      "findByIdAndDelete"
+    );
     const id = "123";
 
     const response = await request(app)
@@ -101,7 +104,10 @@ describe("Room endpoint tests", () => {
     expect(response.body.message).toEqual("Delete successfully");
   });
   test("DELETE /room should return error when id not exist", async () => {
-    const mockRoomFindByIdAndDelete = jest.spyOn(Room, "findByIdAndDelete");
+    const mockRoomFindByIdAndDelete = jest.spyOn(
+      RoomModel,
+      "findByIdAndDelete"
+    );
 
     const response = await request(app)
       .delete("/room")
@@ -112,7 +118,10 @@ describe("Room endpoint tests", () => {
     expect(response.body.error).toEqual(errorMessages.incorectId);
   });
   test("DELETE /room should return error when findByIdAndDelete throw error", async () => {
-    const mockRoomFindByIdAndDelete = jest.spyOn(Room, "findByIdAndDelete");
+    const mockRoomFindByIdAndDelete = jest.spyOn(
+      RoomModel,
+      "findByIdAndDelete"
+    );
     mockRoomFindByIdAndDelete.mockRejectedValueOnce("Error");
 
     const response = await request(app)

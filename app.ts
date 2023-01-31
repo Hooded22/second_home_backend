@@ -4,9 +4,9 @@ import authRoute from "./src/routes/authRoute";
 import passport from "passport";
 import { initialize } from "./src/config/passport.config";
 import feedbackRoute from "./src/routes/feedbackRoutes";
-import roomRouter from "./src/rooms/roomRoute";
+import roomRouter from "./src/room/router";
 import customerRouter from "./src/routes/customerRoute";
-import reservationRouter from "./src/routes/reservationRoute";
+import reservationRouter from "./src/reservation/router";
 initialize(passport);
 
 const app = express();

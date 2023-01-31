@@ -1,13 +1,13 @@
-import Room from "./roomModel";
+import Room from "./model";
 import auth from "../routes/verifyToken";
 import { Router, Request, Response } from "express";
 import { isEmpty } from "lodash";
-import { IRoom } from "./roomTypes";
+import { IRoom } from "./types";
 import {
   addRoomDataValidation,
   deleteRoomValidation,
   updateRoomDataValidation,
-} from "./roomControllers";
+} from "./controllers";
 import errorMessages from "../assets/errorMessages";
 
 const roomRouter = Router();

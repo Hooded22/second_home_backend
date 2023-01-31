@@ -6,15 +6,15 @@ import {
   getAllReservationsValidation,
   getOwnReservationsValdation,
   updateReservationValidation,
-} from "../controllers/reservationControllers";
-import Reservation from "../models/reservationModel";
+} from "./controller";
+import Reservation from "./model";
 import User from "../models/userModel";
 import {
   IReservation,
   IReservationUpdateData,
   ReservationFilters,
-} from "../types/reservationTypes";
-import auth from "./verifyToken";
+} from "./types";
+import auth from "../routes/verifyToken";
 
 const reservationRouter = Router();
 

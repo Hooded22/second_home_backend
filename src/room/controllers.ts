@@ -1,69 +1,55 @@
 import { Request, Response, NextFunction } from "express";
+import { isEmpty } from "lodash";
 import errorMessages from "../assets/errorMessages";
+import { successMessages } from "../assets/successMessages";
+import Room from "./model";
 import RoomModel from "./model";
 import { IRoom } from "./types";
-import { addRoomValidator } from "./validators";
+import { addRoomValidator } from "./validation";
 
-async function validateRoomNumber(roomNumber: number) {
-  const roomWithNumber = await RoomModel.findOne({ number: roomNumber });
-  if (roomWithNumber) {
-    throw new Error(errorMessages.roomWithNumberAlreadyExist);
-  } else {
-    return;
-  }
-}
-
-export async function addRoomDataValidation(
-  req: Request<any, any, IRoom>,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    addRoomValidator(req.body);
-    await validateRoomNumber(req.body.number);
-    next();
-  } catch (error: any) {
-    return res.status(400).send({ error: error.message });
-  }
-}
-
-export async function updateRoomDataValidation(
-  req: Request<any, any, Partial<IRoom>, { id: string }>,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const room = await RoomModel.findById(req.query.id);
-    if (room) {
-      const newData: IRoom = {
-        number: room.number,
-        floor: room.floor,
-        beds: room.beds,
-        standard: room.standard,
-        price: room.price,
-        ...req.body,
-      };
-      addRoomValidator(newData);
-      if (req.body.number) {
-        await validateRoomNumber(req.body.number);
-      }
-      next();
-    } else {
-      throw new Error("Incorect room id");
+export default class RoomController {
+  async addRoom(roomToAdd: IRoom) {
+    try {
+      const room = new Room(roomToAdd);
+      const savedRoom = await room.save();
+      return savedRoom;
+    } catch (error) {
+      throw new Error(error as string);
     }
-  } catch (error: any) {
-    return res.status(400).send(error.message);
   }
-}
 
-export async function deleteRoomValidation(
-  req: Request<any, any, any, { id: string }>,
-  res: Response,
-  next: NextFunction
-) {
-  if (!req.query.id) {
-    res.status(400).send({ error: errorMessages.incorectId });
-  } else {
-    next();
+  async getRoom() {
+    try {
+      const rooms = await Room.find();
+      if (isEmpty(rooms)) {
+        return [];
+      }
+      return rooms;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async updateRoom(id: string, newRoomData: Partial<IRoom>) {
+    try {
+      const result = await Room.findByIdAndUpdate(id, newRoomData);
+      if (result) {
+        const newRoom = await Room.findById(result._id);
+        return newRoom;
+      } else {
+        throw new Error(errorMessages.incorectId);
+      }
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async deleteRoom(id: string) {
+    try {
+      await Room.findByIdAndDelete(id);
+      return successMessages.deleted;
+    } catch (error) {
+      throw new Error(error as string);
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { compare } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
+import { User as UserType } from "../../custom";
 import errorMessages from "../assets/errorMessages";
 import { ac } from "../config/appConfig";
 import User from "../models/userModel";
@@ -53,6 +54,7 @@ export async function findUserByEmailAndPassword(
   const passwordIsValid = await compare(req.body.password, user.password);
   if (!passwordIsValid) return res.status(400).send("Password is wrong");
   res.locals = { ...res.locals, user };
+  req.user = user as UserType;
   next();
 }
 

@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { DEFAULT_PRICE_FOR_NIGHT } from "../assets/constants";
 import { IRoomSchema, RoomStandard } from "../types/roomTypes";
 
 const roomSchema = new Schema<IRoomSchema>({
@@ -6,6 +7,7 @@ const roomSchema = new Schema<IRoomSchema>({
   floor: Schema.Types.Number,
   standard: { type: Schema.Types.String, default: RoomStandard.STANDARD },
   beds: Schema.Types.Number,
+  price: { type: Schema.Types.Number, default: DEFAULT_PRICE_FOR_NIGHT },
 });
 
 const Room = model<IRoomSchema>("RoomModel", roomSchema);

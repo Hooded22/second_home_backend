@@ -54,12 +54,16 @@ authRoute.post(
   ) => {
     if (!res.locals.user) return res.status(500).send("Unrecognized error!");
     const tokenSecret: Secret = config.TOKEN_SECRET;
-    const token = sign({ _id: res.locals.user._id }, tokenSecret);
-    const { firstName, lastName, email, _id } = res.locals.user;
+    const token = sign(
+      { _id: res.locals.user._id, role: req.user?.role },
+      tokenSecret
+    );
+    const { firstName, lastName, email, _id, role } = res.locals.user;
     const userDetails: UserDetailsType = {
       firstName,
       lastName,
       email,
+      role,
     };
     saveUserToken(token, _id);
     res.header("auth-token").json({

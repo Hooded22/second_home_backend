@@ -5,6 +5,7 @@ import { ICustomer } from "../types/customerTypes";
 import {
   validAddCustomerData,
   validateCustomerAge,
+  validEditCustomerData,
 } from "../validators/customerValidators";
 
 export function validateAddCustomeRequest(
@@ -30,13 +31,13 @@ export async function validateUpdateCustomerRequest(
     const customerToUpdate = await Customer.findById(req.query.id);
     if (!customerToUpdate) throw new Error(errorMessages.incorectId);
 
-    const newCustomer: ICustomer = { ...customerToUpdate, ...req.body };
-
-    validAddCustomerData(newCustomer);
+    validEditCustomerData(req.body);
     req.body.birthDate && validateCustomerAge(req.body.birthDate);
 
     next();
   } catch (error: any) {
+    console.error(error.message);
+
     return res.status(400).send(error.message);
   }
 }

@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import errorMessages from "../assets/errorMessages";
 import {
   addReservationValidation,
+  deleteReservationValidation,
   getAllReservationsValidation,
   getOwnReservationsValdation,
   updateReservationValidation,
@@ -28,8 +29,11 @@ reservationRouter.get(
   ) => {
     try {
       const reservations = req.query
-        ? await Reservation.find().where(req.query)
-        : await User.find();
+        ? await Reservation.find()
+            .where(req.query)
+            .populate("roomId")
+            .populate("customerId")
+        : await Reservation.find().populate("roomId");
       return res.status(200).json(reservations);
     } catch (error: any) {
       return res.status(400).send(error.message);
@@ -70,7 +74,7 @@ reservationRouter.put(
   "/",
   updateReservationValidation,
   async (
-    req: Request<any, any, IReservationUpdateData, { id: string }>,
+    req: Request<any, any, Partial<IReservation>, { id: string }>,
     res: Response
   ) => {
     try {
@@ -79,6 +83,7 @@ reservationRouter.put(
         req.body
       );
       if (result) {
+        result.save();
         const newReservation = await Reservation.findById(result._id);
         return res.status(200).send(newReservation);
       } else {
@@ -86,6 +91,23 @@ reservationRouter.put(
       }
     } catch (error) {
       return res.status(400).send(errorMessages.incorectId);
+    }
+  }
+);
+
+reservationRouter.delete(
+  "/",
+  deleteReservationValidation,
+  async (req: Request<any, any, any, { id: string }>, res: Response) => {
+    try {
+      await Reservation.findByIdAndDelete(req.query.id);
+      const allReservations = await Reservation.find()
+        .populate("roomId")
+        .populate("customerId");
+      return res.status(200).json(allReservations);
+    } catch (error) {
+      console.error(error);
+      return res.status(400).send({ error: errorMessages.incorectId });
     }
   }
 );

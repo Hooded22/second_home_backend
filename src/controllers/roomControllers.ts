@@ -40,6 +40,7 @@ export async function updateRoomDataValidation(
         floor: room.floor,
         beds: room.beds,
         standard: room.standard,
+        price: room.price,
         ...req.body,
       };
       addRoomValidator(newData);

@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { DEFAULT_PRICE_FOR_NIGHT } from "../assets/constants";
 import { IRoom, RoomStandard } from "../types/roomTypes";
 
 const addRoomValidationSchema = Joi.object<IRoom>({
@@ -6,6 +7,7 @@ const addRoomValidationSchema = Joi.object<IRoom>({
   floor: Joi.number().positive().required(),
   standard: Joi.string().valid(...Object.values(RoomStandard)),
   beds: Joi.number().positive().required(),
+  price: Joi.number().positive().default(DEFAULT_PRICE_FOR_NIGHT),
 });
 
 export function addRoomValidator(room: IRoom) {

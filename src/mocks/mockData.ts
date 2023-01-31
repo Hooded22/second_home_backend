@@ -7,6 +7,7 @@ export const MOCK_ROOMS: IRoomInDatabase[] = [
     beds: 3,
     floor: 1,
     number: 112,
+    price: 100,
     standard: RoomStandard.STANDARD,
   },
   {
@@ -14,6 +15,7 @@ export const MOCK_ROOMS: IRoomInDatabase[] = [
     beds: 2,
     floor: 4,
     number: 443,
+    price: 100,
     standard: RoomStandard.GOLD,
   },
   {
@@ -21,6 +23,7 @@ export const MOCK_ROOMS: IRoomInDatabase[] = [
     beds: 2,
     floor: 2,
     number: 223,
+    price: 100,
     standard: RoomStandard.PREMIUM,
   },
 ];

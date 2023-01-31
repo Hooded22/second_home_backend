@@ -4,8 +4,11 @@ export enum RoomStandard {
   GOLD = "GOLD",
 }
 
+type RoomPrice = number;
+
 export interface IRoom {
   number: number;
+  price: RoomPrice;
   floor: number;
   standard: RoomStandard;
   beds: number;

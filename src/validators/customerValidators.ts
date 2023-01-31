@@ -9,9 +9,26 @@ const addCustomerDataValidationSchema = Joi.object<ICustomer>({
   birthDate: Joi.date().required(),
 });
 
+const editCustomerDataValidationSchema = Joi.object<ICustomer>({
+  name: Joi.string().min(2).max(200),
+  lastName: Joi.string().min(2).max(200),
+  birthDate: Joi.date(),
+});
+
 export function validAddCustomerData(data: ICustomer) {
   const { error } = addCustomerDataValidationSchema.validate(data);
   if (error) {
+    throw new Error(error.details[0].message);
+  } else {
+    return;
+  }
+}
+
+export function validEditCustomerData(data: Partial<ICustomer>) {
+  const { error } = editCustomerDataValidationSchema.validate(data);
+  if (error) {
+    console.error("ERR: ", data);
+
     throw new Error(error.details[0].message);
   } else {
     return;

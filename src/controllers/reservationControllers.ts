@@ -11,6 +11,7 @@ import {
   validateAddReservationData,
   validateUpdateReservationData,
 } from "../validators/reservationValidators";
+import Room from "../models/roomModel";
 
 export function getAllReservationsValidation(
   req: Request<any, any, any, ReservationFilters | undefined>,
@@ -18,11 +19,13 @@ export function getAllReservationsValidation(
   next: NextFunction
 ) {
   try {
-    if (!ac.can(req.user?.role || "").read("reservations").granted)
+    console.log(req.user);
+
+    if (!ac.can(req.user?.role || "").read("reservation").granted)
       throw new Error(errorMessages.permissionDenied);
     next();
   } catch (error: any) {
-    return res.send(400).send(error.message);
+    return res.sendStatus(403).send("Permission denied");
   }
 }
 
@@ -63,5 +66,17 @@ export function updateReservationValidation(
     next();
   } catch (error: any) {
     return res.status(400).send(error.message);
+  }
+}
+
+export async function deleteReservationValidation(
+  req: Request<any, any, any, { id: string }>,
+  res: Response,
+  next: NextFunction
+) {
+  if (!req.query.id) {
+    res.status(400).send({ error: errorMessages.incorectId });
+  } else {
+    next();
   }
 }

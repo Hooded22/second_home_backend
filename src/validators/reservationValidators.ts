@@ -9,16 +9,15 @@ const addReservationValidationSchema = Joi.object({
   customerId: Joi.string().required(),
   startTime: Joi.date().default(new Date()),
   endTime: Joi.date(),
-  status: Joi.string().default(ReservationStatuses.OPEN),
-  days: Joi.number().default(1),
-  cost: Joi.number().required(),
   roomId: Joi.string().required(),
-  cardNumber: Joi.number().required(),
 });
 
 const updateReservationValidationSchema = Joi.object({
-  ...addReservationValidationSchema,
-  status: undefined,
+  customerId: Joi.string(),
+  startTime: Joi.date().default(new Date()),
+  endTime: Joi.date(),
+  roomId: Joi.string(),
+  status: Joi.string().valid(...Object.values(ReservationStatuses)),
 });
 
 export function validateAddReservationData(data: IReservation) {

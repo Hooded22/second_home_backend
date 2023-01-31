@@ -5,7 +5,8 @@ import {
   validateUpdateCustomerRequest,
 } from "../controllers/customerControllers";
 import Customer from "../models/customerModel";
-import { ICustomer } from "../types/customerTypes";
+import Reservation from "../models/reservationModel";
+import { CustomerWithReservations, ICustomer } from "../types/customerTypes";
 import auth from "./verifyToken";
 
 const customerRouter = Router();
@@ -16,6 +17,31 @@ customerRouter.get("/", async (req: Request, res: Response) => {
   try {
     const customers = await Customer.find();
     return res.status(200).json(customers);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal error");
+  }
+});
+
+customerRouter.get("/withReservations", async (req: Request, res: Response) => {
+  try {
+    const customers = await Customer.find();
+    const customersWithReservations: CustomerWithReservations[] = [];
+    for (const customer of customers) {
+      const reservations = await Reservation.find().where({
+        customerId: customer._id,
+      });
+      console.log("TEST: ", customer._id, reservations);
+      if (reservations && reservations.length !== 0) {
+        customersWithReservations.push({
+          name: customer.name,
+          lastName: customer.lastName,
+          birthDate: customer.birthDate,
+          reservations: reservations,
+        });
+      }
+    }
+    return res.status(200).json(customersWithReservations);
   } catch (error) {
     console.error(error);
     return res.status(500).send("Internal error");

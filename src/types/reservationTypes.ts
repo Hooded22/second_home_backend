@@ -1,3 +1,4 @@
+import { Model } from "mongoose";
 import { ICustomer } from "./customerTypes";
 import { IRoom } from "./roomTypes";
 
@@ -10,13 +11,11 @@ export enum ReservationStatuses {
 
 export interface IReservation {
   customerId: string;
-  startTime: Date;
-  endTime: Date | null;
+  startTime?: Date;
+  endTime: Date;
   status: ReservationStatuses;
-  days: number;
   cost: number;
   roomId: IRoom;
-  cardNumber: number;
 }
 
 export type IReservationUpdateData = Partial<Omit<IReservation, "status">>;
@@ -25,4 +24,6 @@ export type ReservationFilters = Partial<IReservation>;
 
 export type ReservationResponse = Omit<IReservation, "cardNumber">;
 
-export interface IReservationSceham extends IReservation, Document {}
+export interface IReservationSceham extends IReservation, Document {
+  calculateReservationDays(this: IReservationSceham): number;
+}

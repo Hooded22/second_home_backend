@@ -1,3 +1,5 @@
+import { IReservation } from "./reservationTypes";
+
 export interface ICustomer {
   name: string;
   lastName: string;
@@ -5,3 +7,6 @@ export interface ICustomer {
 }
 
 export interface ICustomerSchema extends ICustomer, Document {}
+export interface CustomerWithReservations extends ICustomer {
+  reservations?: IReservation[];
+}

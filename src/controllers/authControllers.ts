@@ -3,13 +3,13 @@ import { NextFunction, Request, Response } from "express";
 import { User as UserType } from "../../custom";
 import errorMessages from "../assets/errorMessages";
 import { ac } from "../config/appConfig";
-import User from "../users/userModel";
+import User from "../users/model";
 import {
   UserLoginType,
   IUser,
   UserRoles,
   UserDetailsType,
-} from "../users/userTypes";
+} from "../users/types";
 import CustomResponse from "../utils/CustomResponse";
 import { getUserByEmail } from "../users/utils";
 import { loginValidation, registerValidation } from "../utils/validations";

@@ -3,11 +3,11 @@ import errorMessages from "../assets/errorMessages";
 import {
   validateAddCustomeRequest,
   validateUpdateCustomerRequest,
-} from "../controllers/customerControllers";
-import Customer from "../models/customerModel";
+} from "./controllers";
+import Customer from "./model";
 import Reservation from "../reservation/model";
-import { CustomerWithReservations, ICustomer } from "../types/customerTypes";
-import auth from "./verifyToken";
+import { CustomerWithReservations, ICustomer } from "./types";
+import auth from "../routes/verifyToken";
 
 const customerRouter = Router();
 

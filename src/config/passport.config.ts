@@ -1,6 +1,6 @@
 import passport, { PassportStatic } from "passport";
 import { IVerifyOptions, Strategy as LocalStrategy } from "passport-local";
-import User from "../users/userModel";
+import User from "../users/model";
 import bcrypt from "bcrypt";
 
 export function initialize(passport: PassportStatic) {

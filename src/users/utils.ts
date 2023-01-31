@@ -1,4 +1,4 @@
-import User from "./userModel";
+import User from "./model";
 
 export const getUserByEmail = async (email: string) => {
   try {

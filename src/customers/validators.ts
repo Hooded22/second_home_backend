@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Joi from "joi";
-import { ICustomer } from "../types/customerTypes";
+import { ICustomer } from "./types";
 import { DateTime } from "luxon";
 
 const addCustomerDataValidationSchema = Joi.object<ICustomer>({

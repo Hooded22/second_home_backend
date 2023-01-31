@@ -4,7 +4,7 @@ import {
   IFeedbackModel,
   IFeedbackSchema,
 } from "./types";
-import { IUserSchema } from "../users/userTypes";
+import { IUserSchema } from "../users/types";
 
 export async function findByStatus(
   this: IFeedbackModel,

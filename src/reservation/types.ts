@@ -1,5 +1,5 @@
 import { Model } from "mongoose";
-import { ICustomer } from "../types/customerTypes";
+import { ICustomer } from "../customers/types";
 import { IRoom } from "../room/types";
 
 export enum ReservationStatuses {

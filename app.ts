@@ -5,7 +5,7 @@ import passport from "passport";
 import { initialize } from "./src/config/passport.config";
 import feedbackRoute from "./src/feedbacks/routes";
 import roomRouter from "./src/room/router";
-import customerRouter from "./src/routes/customerRoute";
+import customerRouter from "./src/customers/router";
 import reservationRouter from "./src/reservation/router";
 initialize(passport);
 

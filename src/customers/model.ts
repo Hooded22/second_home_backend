@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { ICustomerSchema } from "../types/customerTypes";
+import { ICustomerSchema } from "./types";
 
 const customerSchema = new Schema<ICustomerSchema>({
   name: { type: String, required: true },

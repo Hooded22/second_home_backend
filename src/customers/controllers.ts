@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import errorMessages from "../assets/errorMessages";
-import Customer from "../models/customerModel";
-import { ICustomer } from "../types/customerTypes";
+import Customer from "./model";
+import { ICustomer } from "./types";
 import {
   validAddCustomerData,
   validateCustomerAge,
   validEditCustomerData,
-} from "../validators/customerValidators";
+} from "./validators";
 
 export function validateAddCustomeRequest(
   req: Request<any, any, ICustomer>,

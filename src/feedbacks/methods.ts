@@ -1,7 +1,7 @@
 import Feedback from "./model";
-import User from "../users/userModel";
+import User from "../users/model";
 import { FeedbackStatusesKeys, IFeedbackSchema } from "./types";
-import { UserDetailsType } from "../users/userTypes";
+import { UserDetailsType } from "../users/types";
 
 export async function getFeedbackAuthor(
   this: IFeedbackSchema

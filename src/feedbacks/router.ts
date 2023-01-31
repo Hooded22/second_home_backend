@@ -24,8 +24,8 @@ feedbackRoute.post(
     try {
       const resultData = await feedbackController.addFeedback(feedback, author);
       res.status(200).json(resultData);
-    } catch (error) {
-      res.status(400).json(error);
+    } catch (error: any) {
+      res.status(400).json(error?.message);
     }
   }
 );
@@ -37,8 +37,8 @@ feedbackRoute.get(
     try {
       const feedbacks = await feedbackController.getFeedback(status);
       return res.status(200).json(feedbacks);
-    } catch (error) {
-      return res.send(400).send(error);
+    } catch (error: any) {
+      return res.send(400).send(error?.message);
     }
   }
 );

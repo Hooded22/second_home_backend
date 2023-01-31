@@ -1,14 +1,14 @@
 import { Router, Request, Response } from "express";
 import errorMessages from "../assets/errorMessages";
-import { validateAddFeedbackData } from "../controllers/feedbackControllers";
-import Feedback from "../models/feedbackModel";
+import { validateAddFeedbackData } from "./controller";
+import Feedback from "./model";
 import {
   ICreateFeedbackRequest,
   IFeedbackFilters,
   IFeedbackResponseData,
-} from "../types/feedbackTypes";
-import { ResponseLocalsType } from "./requestTypes";
-import auth from "./verifyToken";
+} from "./types";
+import { ResponseLocalsType } from "../routes/requestTypes";
+import auth from "../routes/verifyToken";
 
 const feedbackRoute = Router();
 

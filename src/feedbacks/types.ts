@@ -1,5 +1,5 @@
 import { Document, Model } from "mongoose";
-import { IUser, IUserSchema, UserDetailsType } from "./userTypes";
+import { IUser, IUserSchema, UserDetailsType } from "../types/userTypes";
 
 export interface IFeedback {
   title: string;

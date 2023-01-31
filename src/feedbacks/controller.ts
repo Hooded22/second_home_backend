@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { ICreateFeedbackRequest } from "../types/feedbackTypes";
-import { addFeedbackValidation } from "../validators/feedbackValidator";
+import { ICreateFeedbackRequest } from "./types";
+import { addFeedbackValidation } from "./validator";
 
 export async function validateAddFeedbackData(
   req: Request<any, any, ICreateFeedbackRequest>,

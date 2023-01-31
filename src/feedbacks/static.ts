@@ -3,7 +3,7 @@ import {
   IFeedback,
   IFeedbackModel,
   IFeedbackSchema,
-} from "../types/feedbackTypes";
+} from "./types";
 import { IUserSchema } from "../types/userTypes";
 
 export async function findByStatus(
@@ -27,6 +27,6 @@ export async function modifyFeedbackStatus(
     );
     return result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

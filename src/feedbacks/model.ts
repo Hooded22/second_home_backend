@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
-import { getFeedbackAuthor } from "../methods/feedbackMethods";
-import { findByStatus, modifyFeedbackStatus } from "../static/feedbackStatic";
-import { IFeedbackModel, IFeedbackSchema } from "../types/feedbackTypes";
+import { getFeedbackAuthor } from "./methods";
+import { findByStatus, modifyFeedbackStatus } from "./static";
+import { IFeedbackModel, IFeedbackSchema } from "./types";
 
 const FeedbackSchema = new Schema<IFeedbackSchema, IFeedbackModel>({
   title: String,

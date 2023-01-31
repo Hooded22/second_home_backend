@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { ICreateFeedbackRequest } from "../types/feedbackTypes";
+import { ICreateFeedbackRequest } from "./types";
 
 const addFeedbackSchema = Joi.object<ICreateFeedbackRequest>({
   title: Joi.string().min(3).max(256).required(),

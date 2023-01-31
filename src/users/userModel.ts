@@ -5,7 +5,7 @@ import {
   Model,
   Document,
 } from "mongoose";
-import { IUserSchema, UserRoles } from "../types/userTypes";
+import { IUserSchema, UserRoles } from "./userTypes";
 import bcrypt from "bcrypt";
 
 const userSchema = new Schema<IUserSchema>({

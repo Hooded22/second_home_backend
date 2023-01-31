@@ -1,6 +1,6 @@
 import { AccessControl } from "accesscontrol";
-import User from "../models/userModel";
-import { UserRoles } from "../types/userTypes";
+import User from "../users/userModel";
+import { UserRoles } from "../users/userTypes";
 
 const appConfig = {
   TOKEN_SECRET: "asdcvbhjklop",

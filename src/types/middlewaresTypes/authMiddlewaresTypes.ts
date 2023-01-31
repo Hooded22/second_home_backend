@@ -1,4 +1,4 @@
-import { IUserSchema } from "../userTypes";
+import { IUserSchema } from "../../users/userTypes";
 
 export type RegisterResponseLocalsType = {
   user?: IUserSchema;

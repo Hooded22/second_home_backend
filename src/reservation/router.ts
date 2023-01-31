@@ -8,7 +8,7 @@ import {
   updateReservationValidation,
 } from "./controller";
 import Reservation from "./model";
-import User from "../models/userModel";
+import User from "../users/userModel";
 import {
   IReservation,
   IReservationUpdateData,

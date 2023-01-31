@@ -1,7 +1,7 @@
 import { NextFunction } from "express";
 import { model, Schema, Types, ObjectId } from "mongoose";
 import { DEFAULT_PRICE_FOR_NIGHT } from "../assets/constants";
-import { calculateReservationDays } from "../methods/reservationMethods";
+import { calculateReservationDays } from "./methods";
 import { IReservation, IReservationSceham, ReservationStatuses } from "./types";
 import RoomModel from "../room/model";
 

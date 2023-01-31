@@ -3,15 +3,15 @@ import { NextFunction, Request, Response } from "express";
 import { User as UserType } from "../../custom";
 import errorMessages from "../assets/errorMessages";
 import { ac } from "../config/appConfig";
-import User from "../models/userModel";
+import User from "../users/userModel";
 import {
   UserLoginType,
   IUser,
   UserRoles,
   UserDetailsType,
-} from "../types/userTypes";
+} from "../users/userTypes";
 import CustomResponse from "../utils/CustomResponse";
-import { getUserByEmail } from "../utils/getUserByEmail";
+import { getUserByEmail } from "../users/utils";
 import { loginValidation, registerValidation } from "../utils/validations";
 
 export async function validateRegisterCredentials(

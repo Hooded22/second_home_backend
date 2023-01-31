@@ -4,8 +4,8 @@ import {
   UserDetailsType,
   UserLoginType,
   UserRoles,
-} from "../types/userTypes";
-import User from "../models/userModel";
+} from "../users/userTypes";
+import User from "../users/userModel";
 import {
   checkUserExist,
   validateLoginCredentials,

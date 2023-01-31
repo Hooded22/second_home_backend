@@ -14,7 +14,7 @@ import {
   IReservationUpdateData,
   ReservationFilters,
 } from "./types";
-import auth from "../routes/verifyToken";
+import auth from "../auth/middleware";
 
 const reservationRouter = Router();
 

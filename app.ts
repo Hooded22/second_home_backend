@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import authRoute from "./src/routes/authRoute";
+import authRoute from "./src/auth/router";
 import passport from "passport";
 import { initialize } from "./src/config/passport.config";
 import feedbackRoute from "./src/feedbacks/routes";

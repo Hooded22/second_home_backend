@@ -7,7 +7,7 @@ import {
 import Customer from "./model";
 import Reservation from "../reservation/model";
 import { CustomerWithReservations, ICustomer } from "./types";
-import auth from "../routes/verifyToken";
+import auth from "../auth/middleware";
 
 const customerRouter = Router();
 

@@ -1,5 +1,5 @@
 import Room from "./model";
-import auth from "../routes/verifyToken";
+import auth from "../auth/middleware";
 import { Router, Request, Response } from "express";
 import { isEmpty } from "lodash";
 import { IRoom } from "./types";

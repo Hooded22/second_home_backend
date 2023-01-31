@@ -13,14 +13,14 @@ import {
   validateRegisterCredentials,
   saveUserToken,
   validateGrandUserData,
-} from "../controllers/authControllers";
+} from "./controller";
 import { hash } from "bcrypt";
-import { RegisterResponseLocalsType } from "../types/middlewaresTypes/authMiddlewaresTypes";
+import { RegisterResponseLocalsType } from "./types";
 import { Secret, sign } from "jsonwebtoken";
 import config, { ac } from "../config/appConfig";
 import errorMessages from "../assets/errorMessages";
-import auth from "./verifyToken";
-import CustomResponse from "../utils/CustomResponse";
+import auth from "./middleware";
+import CustomResponse from "../globals/CustomResponse";
 
 //TODO: Write tests
 

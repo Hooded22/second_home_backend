@@ -10,9 +10,9 @@ import {
   UserRoles,
   UserDetailsType,
 } from "../users/types";
-import CustomResponse from "../utils/CustomResponse";
+import CustomResponse from "../globals/CustomResponse";
 import { getUserByEmail } from "../users/utils";
-import { loginValidation, registerValidation } from "../utils/validations";
+import { loginValidation, registerValidation } from "./validations";
 
 export async function validateRegisterCredentials(
   req: Request<any, any, IUser>,

@@ -7,8 +7,8 @@ import {
   IFeedbackFilters,
   IFeedbackResponseData,
 } from "./types";
-import { ResponseLocalsType } from "../routes/requestTypes";
-import auth from "../routes/verifyToken";
+import { ResponseLocalsType } from "../globals/types";
+import auth from "../auth/middleware";
 
 const feedbackRoute = Router();
 

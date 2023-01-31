@@ -6,7 +6,7 @@ export interface IFeedback {
   description: string;
   rate: number;
   creationDate: number;
-  status: FeedbackStatusesKeys;
+  status: FeedbackStatusEnum;
 }
 
 export interface IFeedbackResponseData extends IFeedback {
@@ -16,6 +16,12 @@ export interface ICreateFeedbackRequest {
   title: string;
   description: string;
   rate: number;
+}
+
+export enum FeedbackStatusEnum {
+  OPEN = 0,
+  ACCEPTED = 10,
+  REJECTED = 20,
 }
 
 export type FeedbackStatusesKeys = 0 | 10 | 20;
@@ -46,7 +52,7 @@ export interface IFeedbackModel
   modifyFeedbackStatus: (
     this: IFeedbackModel,
     id: string,
-    status: FeedbackStatusesKeys
+    status: FeedbackStatusEnum
   ) => Promise<IFeedbackSchema>;
 }
 

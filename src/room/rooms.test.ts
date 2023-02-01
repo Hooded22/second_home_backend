@@ -1,19 +1,19 @@
 import { text } from "express";
 import request from "supertest";
-import app from "../app";
-import errorMessages from "../src/assets/errorMessages";
-import { MOCK_ROOMS } from "../src/mocks/mockData";
-import RoomModel from "../src/room/model";
-import { IRoom, RoomStandard } from "../src/room/types";
+import app from "../../app";
+import errorMessages from "../assets/errorMessages";
+import { MOCK_ROOMS } from "../mocks/mockData";
+import RoomModel from "./model";
+import { IRoom, RoomStandard } from "./types";
 
-jest.mock("../src/auth/middleware", () =>
+jest.mock("../auth/middleware", () =>
   jest.fn((req, res, next) => {
     next();
   })
 );
 
-jest.mock("../src/room/model", () => {
-  const { MockRoomModel } = require("../src/mocks/mockModels");
+jest.mock("./model", () => {
+  const { MockRoomModel } = require("../mocks/mockModels");
 
   return MockRoomModel;
 });
@@ -98,7 +98,121 @@ describe("Rooms", () => {
         .set("Content-Type", "application/json")
         .send(postData)
         .expect(400);
+
       expect(response.body.error).toEqual('"floor" is required');
+    });
+  });
+
+  describe("PUT /room", () => {
+    test("PUT /room with id of room and new data should return 200 with updated room data", async () => {
+      const mockRoomData: IRoom = {
+        beds: 2,
+        floor: 2,
+        price: 100,
+        number: MOCK_ROOMS[0].number,
+        standard: RoomStandard.PREMIUM,
+      };
+      const mockRoomNewData = {
+        beds: 4,
+        floor: 4,
+      };
+      const mockfindById = jest.spyOn(RoomModel, "findById");
+      mockfindById.mockImplementation(() => mockRoomData as any);
+
+      const mockfindByIdAndUpdate = jest.spyOn(RoomModel, "findByIdAndUpdate");
+      mockfindByIdAndUpdate.mockImplementationOnce(() => true as any);
+
+      const response = await request(app)
+        .put("/room")
+        .set("Content-Type", "application/json")
+        .send(mockRoomNewData)
+        .query({ id: "133" })
+        .expect(200);
+
+      expect(response.body).toEqual(mockRoomData);
+
+      mockfindById.mockReset();
+      mockfindByIdAndUpdate.mockReset();
+    });
+
+    test("PUT /room with incorect id should return 404 and error message", async () => {
+      const mockfindById = jest.spyOn(RoomModel, "findById");
+      mockfindById.mockRejectedValueOnce(errorMessages.incorectId);
+
+      const response = await request(app)
+        .put("/room")
+        .set("Content-Type", "application/json")
+        .send({})
+        .query({ id: "133" })
+        .expect(400);
+
+      expect(response.body.error).toEqual(errorMessages.incorectId);
+    });
+    test("PUT /room with correct id but incorect data should return 400 and error message", async () => {
+      const mockRoomData: IRoom = {
+        beds: 2,
+        floor: 2,
+        price: 100,
+        number: MOCK_ROOMS[0].number,
+        standard: RoomStandard.PREMIUM,
+      };
+      const mockRoomNewData = {
+        beds: -4,
+        number: -3,
+        floor: "4",
+      };
+      const mockfindById = jest.spyOn(RoomModel, "findById");
+      mockfindById.mockImplementation(() => mockRoomData as any);
+
+      const mockfindByIdAndUpdate = jest.spyOn(RoomModel, "findByIdAndUpdate");
+      mockfindByIdAndUpdate.mockImplementationOnce(() => true as any);
+
+      const response = await request(app)
+        .put("/room")
+        .set("Content-Type", "application/json")
+        .send(mockRoomNewData)
+        .query({ id: "133" })
+        .expect(400);
+
+      expect(response.body.error).toEqual(
+        'Error: "number" must be greater than 0'
+      );
+
+      mockfindById.mockReset();
+      mockfindByIdAndUpdate.mockReset();
+    });
+
+    test("PUT /room should return error when saving to db go wrong", async () => {
+      const mockRoomData: IRoom = {
+        beds: 2,
+        floor: 2,
+        price: 100,
+        number: MOCK_ROOMS[0].number,
+        standard: RoomStandard.PREMIUM,
+      };
+      const mockRoomNewData = {
+        beds: 4,
+        number: 3,
+      };
+      const mockfindById = jest.spyOn(RoomModel, "findById");
+      mockfindById.mockImplementation(() => mockRoomData as any);
+
+      const mockfindByIdAndUpdate = jest.spyOn(RoomModel, "findByIdAndUpdate");
+      mockfindByIdAndUpdate.mockImplementationOnce(() => false as any);
+
+      const response = await request(app)
+        .put("/room")
+        .set("Content-Type", "application/json")
+        .send(mockRoomNewData)
+        .query({ id: "133" })
+        .expect(400);
+
+      expect(response.body.error).toEqual(
+        "Error: Error: Incorect id. Item with this it don't exist in database"
+      );
+
+      mockfindById.mockReset();
+      mockfindByIdAndUpdate.mockReset();
     });
   });
 

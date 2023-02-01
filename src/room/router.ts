@@ -48,8 +48,8 @@ roomRouter.put(
     try {
       const result = await roomController.updateRoom(req.query.id, req.body);
       return res.status(200).json(result);
-    } catch (error) {
-      return res.status(400).send(error);
+    } catch (error: any) {
+      return res.status(400).send({ error: new Error(error).message });
     }
   }
 );

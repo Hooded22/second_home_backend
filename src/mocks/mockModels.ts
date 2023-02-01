@@ -1,7 +1,7 @@
 import { IRoomInDatabase, RoomStandard } from "../room/types";
 import { MOCK_ROOMS } from "./mockData";
 
-class DefaultModel {
+export class DefaultModel {
   constructor(data: {}) {
     this.save = this.save;
     this.data = data;
@@ -13,6 +13,7 @@ class DefaultModel {
   static findOne = jest.fn();
   static findById = jest.fn();
   static findByIdAndDelete = jest.fn();
+  static findByIdAndUpdate = jest.fn();
   save = jest.fn(() => this.data);
 }
 

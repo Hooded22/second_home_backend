@@ -69,7 +69,7 @@ export async function updateRoomDataValidation(
       throw new Error("Incorect room id");
     }
   } catch (error: any) {
-    return res.status(400).send(error.message);
+    return res.status(400).json({ error: new Error(error).message });
   }
 }
 

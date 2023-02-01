@@ -7,4 +7,10 @@ const errorMessages = {
   findError: "Unable to find element",
 };
 
+export const commonErrorSatusCodes = {
+  notFound: 404,
+  operationFailed: 400,
+  internalError: 500,
+};
+
 export default errorMessages;

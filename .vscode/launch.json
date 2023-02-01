@@ -20,7 +20,7 @@
           "protocol": "inspector",
           "cwd": "${workspaceRoot}",
           "runtimeExecutable": "npm",
-          "runtimeArgs": ["run-script", "dev"]
+          "runtimeArgs": ["run-script", "start:debug"]
         }
       ]
 }

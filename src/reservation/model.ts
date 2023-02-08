@@ -19,10 +19,8 @@ reservationSchema.methods.calculateReservationDays = calculateReservationDays;
 reservationSchema.pre<IReservationSceham>("save", async function (next: any) {
   const reservation = this;
   try {
-    const room = await RoomModel.findById(reservation.roomId);
-    const days = this.calculateReservationDays();
-    const cost = room ? room.price * days : DEFAULT_PRICE_FOR_NIGHT * days;
-    this.cost = Math.round(cost);
+    const cost = await calculateReservationCost(reservation);
+    this.cost = cost;
     next();
   } catch (e: any) {
     throw new Error(e).message;
@@ -34,17 +32,21 @@ reservationSchema.pre<IReservationSceham>(
   async function (next: any) {
     const reservation = this;
     try {
-      const room = await RoomModel.findById(reservation.roomId);
-      const days = this.calculateReservationDays();
-      const cost = room ? room.price * days : DEFAULT_PRICE_FOR_NIGHT * days;
-      this.cost = Math.round(cost);
-    } catch (e: any) {
-      console.log(e);
-    } finally {
+      const cost = await calculateReservationCost(reservation);
+      this.cost = cost;
       next();
+    } catch (e: any) {
+      throw new Error(e).message;
     }
   }
 );
+
+async function calculateReservationCost(reservation: IReservationSceham) {
+  const room = await RoomModel.findById(reservation.roomId);
+  const days = reservation.calculateReservationDays();
+  const cost = room ? room.price * days : DEFAULT_PRICE_FOR_NIGHT * days;
+  return Math.round(cost);
+}
 
 const Reservation = model<IReservationSceham>(
   "ReservationModel",

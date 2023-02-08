@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import errorMessages from "../assets/errorMessages";
-import {
+import ReservationController, {
   addReservationValidation,
   deleteReservationValidation,
   getAllReservationsValidation,
@@ -15,8 +15,10 @@ import {
   ReservationFilters,
 } from "./types";
 import auth from "../auth/middleware";
+import isEmpty from "lodash/isEmpty";
 
 const reservationRouter = Router();
+const reservationController = new ReservationController();
 
 reservationRouter.use("/", auth);
 
@@ -28,15 +30,12 @@ reservationRouter.get(
     res: Response
   ) => {
     try {
-      const reservations = req.query
-        ? await Reservation.find()
-            .where(req.query)
-            .populate("roomId")
-            .populate("customerId")
-        : await Reservation.find().populate("roomId");
+      const reservations = await reservationController.getReservation(
+        req.query
+      );
       return res.status(200).json(reservations);
     } catch (error: any) {
-      return res.status(400).send(error.message);
+      return res.status(400).send({ error: new Error(error).message });
     }
   }
 );
@@ -46,11 +45,12 @@ reservationRouter.get(
   getOwnReservationsValdation,
   async (req: Request, res: Response) => {
     try {
-      const reservations = Reservation.find().where({
+      const reservations = await Reservation.find().where({
         customerId: req.user?._id,
       });
       return res.status(200).json(reservations);
     } catch (error: any) {
+      console.log("ERR: ", error);
       return res.status(400).send(error.message);
     }
   }
@@ -64,8 +64,8 @@ reservationRouter.post(
       const reservation = new Reservation(req.body);
       const savedReservation = await reservation.save();
       return res.status(200).json(savedReservation);
-    } catch (error) {
-      return res.status(400).send({ error });
+    } catch (error: any) {
+      return res.status(400).send({ error: new Error(error).message });
     }
   }
 );
@@ -87,10 +87,14 @@ reservationRouter.put(
         const newReservation = await Reservation.findById(result._id);
         return res.status(200).send(newReservation);
       } else {
-        return res.status(400).send(errorMessages.incorectId);
+        return res
+          .status(400)
+          .send({ error: new Error(errorMessages.incorectId).message });
       }
     } catch (error) {
-      return res.status(400).send(errorMessages.incorectId);
+      return res
+        .status(400)
+        .send({ error: new Error(errorMessages.incorectId).message });
     }
   }
 );

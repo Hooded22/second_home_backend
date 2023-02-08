@@ -9,6 +9,7 @@ const appConfig = {
 export const ac = new AccessControl();
 
 ac.grant(UserRoles.CUSTOMER)
+  .readOwn("reservation")
   .grant(UserRoles.STUFF)
   .extend(UserRoles.CUSTOMER)
   .update("feedback")

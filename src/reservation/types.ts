@@ -11,11 +11,16 @@ export enum ReservationStatuses {
 
 export interface IReservation {
   customerId: string;
-  startTime?: Date;
-  endTime: Date;
+  startTime?: string;
+  endTime: string;
   status: ReservationStatuses;
   cost: number;
   roomId: IRoom;
+}
+
+export interface AddReservationBody
+  extends Required<Omit<IReservation, "roomId" | "status" | "cost">> {
+  roomId: string;
 }
 
 export type IReservationUpdateData = Partial<Omit<IReservation, "status">>;

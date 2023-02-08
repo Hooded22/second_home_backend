@@ -11,7 +11,9 @@ import {
   validateAddReservationData,
   validateUpdateReservationData,
 } from "./validators";
-import RoomModel from "../room/model";
+import Reservation from "./model";
+import isEmpty from "lodash/isEmpty";
+import { successMessages } from "../assets/successMessages";
 
 export function getAllReservationsValidation(
   req: Request<any, any, any, ReservationFilters | undefined>,
@@ -25,7 +27,8 @@ export function getAllReservationsValidation(
       throw new Error(errorMessages.permissionDenied);
     next();
   } catch (error: any) {
-    return res.sendStatus(403).send("Permission denied");
+    console.log("ERR: ", error);
+    return res.status(403).send({ error: new Error(error).message });
   }
 }
 
@@ -35,11 +38,12 @@ export function getOwnReservationsValdation(
   next: NextFunction
 ) {
   try {
-    if (!ac.can(req.user?.role || "").readOwn("reservations").granted)
+    if (!ac.can(req.user?.role || "").readOwn("reservation").granted)
       throw new Error(errorMessages.permissionDenied);
     next();
   } catch (error: any) {
-    return res.send(400).send(error.message);
+    console.log("ERRor: ", error, req.user);
+    return res.status(400).send({ error: new Error(error).message });
   }
 }
 
@@ -52,7 +56,7 @@ export function addReservationValidation(
     validateAddReservationData(req.body);
     next();
   } catch (error: any) {
-    return res.status(400).send(error.message);
+    return res.status(400).send({ error: new Error(error).message });
   }
 }
 
@@ -78,5 +82,22 @@ export async function deleteReservationValidation(
     res.status(400).send({ error: errorMessages.incorectId });
   } else {
     next();
+  }
+}
+
+export default class ReservationController {
+  async getReservation(filters?: ReservationFilters) {
+    try {
+      const withFilters = filters && !isEmpty(filters);
+      const reservations = withFilters
+        ? await Reservation.find()
+            .where(filters as ReservationFilters)
+            .populate("roomId")
+            .populate("customerId")
+        : await Reservation.find().populate("roomId");
+      return reservations;
+    } catch (error) {
+      throw new Error(error as string);
+    }
   }
 }

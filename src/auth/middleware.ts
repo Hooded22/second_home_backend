@@ -28,7 +28,6 @@ function auth(req: Request, res: Response, next: NextFunction) {
     req.user = verified as User;
     next();
   } catch (error) {
-    console.error("ERROR: ", error, token);
     res.status(403).send("Invalid token");
   }
 }

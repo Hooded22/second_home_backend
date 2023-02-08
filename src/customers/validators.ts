@@ -27,8 +27,6 @@ export function validAddCustomerData(data: ICustomer) {
 export function validEditCustomerData(data: Partial<ICustomer>) {
   const { error } = editCustomerDataValidationSchema.validate(data);
   if (error) {
-    console.error("ERR: ", data);
-
     throw new Error(error.details[0].message);
   } else {
     return;

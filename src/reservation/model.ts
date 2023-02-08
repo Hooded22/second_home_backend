@@ -23,10 +23,9 @@ reservationSchema.pre<IReservationSceham>("save", async function (next: any) {
     const days = this.calculateReservationDays();
     const cost = room ? room.price * days : DEFAULT_PRICE_FOR_NIGHT * days;
     this.cost = Math.round(cost);
-  } catch (e: any) {
-    console.log(e);
-  } finally {
     next();
+  } catch (e: any) {
+    throw new Error(e).message;
   }
 });
 

@@ -5,6 +5,7 @@ import request from "supertest";
 import app from "../../app";
 import auth from "../auth/middleware";
 import { UserRoles } from "../users/types";
+import { MockDB } from "../mocks/db";
 
 const mockReservations: IReservation[] = [
   {
@@ -39,6 +40,12 @@ jest.mock("../auth/middleware", () =>
     next();
   })
 );
+
+jest.mock("../assets/constants", () => {
+  return {
+    DEFAULT_PRICE_FOR_NIGHT: 100,
+  };
+});
 
 describe("Reservation CRUD", () => {
   beforeAll(() => {});
@@ -127,7 +134,7 @@ describe("Reservation CRUD", () => {
 
       expect(result.body).toEqual(dataToAdd);
 
-      mockSave.mockReset();
+      mockSave.mockRestore();
     });
 
     test("POST /reservation with incorect data should return 400 and error message", async () => {
@@ -147,6 +154,8 @@ describe("Reservation CRUD", () => {
         .expect(400);
 
       expect(result.body.error).toEqual('Error: "customerId" is required');
+
+      mockSave.mockRestore();
     });
   });
   describe("PUT /reservation", () => {
@@ -260,5 +269,50 @@ describe("Reservation CRUD", () => {
   });
 });
 
-describe("Reservation model", () => {});
+describe("Reservation model", () => {
+  const db = new MockDB();
+  const reservationData: AddReservationBody = {
+    customerId: "6284a8fbb89b3e197f39d391",
+    endTime: "2022-06-12T18:00:00",
+    startTime: "2022-06-08T18:00:00",
+    roomId: "6284a8fbb89b3e197f39d391",
+  };
+
+  beforeAll(async () => {
+    await db.setUp();
+  });
+
+  afterEach(async () => {
+    await db.dropCollections();
+  });
+
+  afterAll(async () => {
+    await db.dropDatabase();
+  });
+
+  describe("Pre save", () => {
+    test("Should return reservation with cost 400 when default cost is 100 and reservation is for 4 days", async () => {
+      const reservation = new ReservationModel(reservationData);
+
+      const result = await reservation.save();
+
+      expect(result.cost).toEqual(400);
+    });
+    test("Should throw error when start time is later than end time", async () => {
+      const reservation = new ReservationModel({
+        ...reservationData,
+        endTime: "2022-06-08T18:00:00",
+        startTime: "2022-06-12T18:00:00",
+      });
+
+      try {
+        const result = await reservation.save();
+      } catch (error: any) {
+        expect(error).toEqual(
+          "Error: Start time cannot be later than end time"
+        );
+      }
+    });
+  });
+});
 describe("Reservation validator", () => {});

@@ -43,7 +43,6 @@ export default class ReservationController {
   async updateReservation(id: string, data: Partial<IReservation>) {
     try {
       const result = await Reservation.findByIdAndUpdate(id, data);
-      console.log("UPDATE: ", result);
       if (result) {
         result.save();
         const newReservation = await Reservation.findById(result._id);

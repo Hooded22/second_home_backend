@@ -55,7 +55,7 @@ jest.mock("../assets/constants", () => {
 });
 
 describe("Reservation CRUD", () => {
-  beforeAll(() => {});
+  const db = new MockDB();
   describe("GET /reservation", () => {
     test("GET /reservation --> 200, all data", async () => {
       const mockFind = jest.spyOn(ReservationModel, "find");
@@ -166,35 +166,30 @@ describe("Reservation CRUD", () => {
     });
   });
   describe("PUT /reservation", () => {
-    test("PUT /reservation should call ReservationModel.findByIdAndUpdate() with id and data", async () => {
+    beforeAll(async () => {
+      await db.setUp();
+    });
+
+    afterEach(async () => {
+      await db.dropCollections();
+    });
+
+    afterAll(async () => {
+      await db.dropDatabase();
+    });
+    test("PUT /reservation should shoudl return reservation with updated data", async () => {
       const mockReservationNewData = {
-        startTime: "2022-06-10T18:00:00",
+        startTime: "2020-02-10T17:00:00.000Z",
       };
+      const reservation = await new ReservationModel(reservationData).save();
 
-      const mockfindByIdAndUpdate = jest.spyOn(
-        ReservationModel,
-        "findByIdAndUpdate"
-      );
-      const mockfindById = jest.spyOn(ReservationModel, "findById");
-
-      mockfindByIdAndUpdate.mockImplementationOnce(
-        () => ({ save: jest.fn() } as any)
-      );
-      mockfindById.mockImplementation(() => true as any);
-
-      await request(app)
+      const result = await request(app)
         .put("/reservation")
-        .set("Content-Type", "application/json")
         .send(mockReservationNewData)
-        .query({ id: "123" });
+        .query({ id: String(reservation._id) });
 
-      expect(mockfindByIdAndUpdate).toBeCalledWith(
-        "123",
-        mockReservationNewData
-      );
-
-      mockfindById.mockRestore();
-      mockfindByIdAndUpdate.mockRestore();
+      console.log("TEST: ", reservation);
+      expect(result.body.startTime).toEqual(mockReservationNewData.startTime);
     });
     test("PUT /reservation with id and data shoudl return status 200", async () => {
       const mockReservationNewData = {
@@ -291,17 +286,11 @@ describe("Reservation logic", () => {
   });
 
   test("POST /endReservation should retrun status code 200 and reservation with status CLOSED", async () => {
-    const saveRsult = await db.addItemToCollection<AddReservationBody>(
-      "reservationmodels",
-      reservationData
-    );
-    const reservationToEndId = saveRsult?.ops[0]._id;
-
-    console.log("ID: ", String(reservationToEndId));
+    const reservation = await new ReservationModel(reservationData).save();
 
     const result = await request(app)
       .post("/reservation/endReservation")
-      .query({ id: String(reservationToEndId) })
+      .query({ id: String(reservation._id) })
       .expect(200);
 
     expect(result.body.status).toEqual(ReservationStatuses.CLOSED);

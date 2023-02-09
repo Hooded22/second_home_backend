@@ -29,6 +29,8 @@ export class MockDB {
         const collection = collections[key];
         await collection.deleteMany({});
       }
+
+      return;
     }
   };
 

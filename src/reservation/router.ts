@@ -1,7 +1,12 @@
 import { Request, Response, Router } from "express";
 import errorMessages from "../assets/errorMessages";
 import ReservationController from "./controller";
-import { IReservation, ReservationFilters } from "./types";
+import {
+  AddReservationBody,
+  IReservation,
+  ReservationFilters,
+  ReservationStatuses,
+} from "./types";
 import auth from "../auth/middleware";
 import {
   getAllReservationsValidation,
@@ -10,6 +15,7 @@ import {
   updateReservationValidation,
   deleteReservationValidation,
 } from "./validators";
+import { validateId, validateQueryId } from "../globals/validators";
 
 const reservationRouter = Router();
 const reservationController = new ReservationController();
@@ -52,7 +58,7 @@ reservationRouter.get(
 reservationRouter.post(
   "/",
   addReservationValidation,
-  async (req: Request<any, any, IReservation>, res: Response) => {
+  async (req: Request<any, any, AddReservationBody>, res: Response) => {
     try {
       const savedReservation = await reservationController.addReservation(
         req.body
@@ -100,8 +106,20 @@ reservationRouter.delete(
   }
 );
 
-reservationRouter.post("/endReservation");
-
-reservationRouter.post("/delayReservation");
+reservationRouter.post(
+  "/endReservation",
+  validateQueryId,
+  async (req: Request<any, any, any, { id: string }>, res: Response) => {
+    try {
+      const endedReservation = await reservationController.updateReservation(
+        req.query.id,
+        { status: ReservationStatuses.CLOSED }
+      );
+      return res.status(200).json(endedReservation);
+    } catch (error: any) {
+      return res.status(400).send({ error: new Error(error).message });
+    }
+  }
+);
 
 export default reservationRouter;

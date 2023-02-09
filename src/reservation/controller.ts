@@ -1,4 +1,4 @@
-import { IReservation, ReservationFilters } from "./types";
+import { AddReservationBody, IReservation, ReservationFilters } from "./types";
 import errorMessages from "../assets/errorMessages";
 import Reservation from "./model";
 import isEmpty from "lodash/isEmpty";
@@ -30,7 +30,7 @@ export default class ReservationController {
     }
   }
 
-  async addReservation(data: IReservation) {
+  async addReservation(data: AddReservationBody) {
     try {
       const reservation = new Reservation(data);
       const savedReservation = await reservation.save();
@@ -43,6 +43,7 @@ export default class ReservationController {
   async updateReservation(id: string, data: Partial<IReservation>) {
     try {
       const result = await Reservation.findByIdAndUpdate(id, data);
+      console.log("UPDATE: ", result);
       if (result) {
         result.save();
         const newReservation = await Reservation.findById(result._id);

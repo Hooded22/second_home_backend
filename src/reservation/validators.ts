@@ -1,5 +1,6 @@
 import Joi from "joi";
 import {
+  AddReservationBody,
   IReservation,
   IReservationUpdateData,
   ReservationFilters,
@@ -24,7 +25,7 @@ const updateReservationValidationSchema = Joi.object({
   status: Joi.string().valid(...Object.values(ReservationStatuses)),
 });
 
-export function validateAddReservationData(data: IReservation) {
+export function validateAddReservationData(data: AddReservationBody) {
   const { error } = addReservationValidationSchema.validate(data);
   if (error) {
     throw new Error(error.details[0].message);
@@ -69,7 +70,7 @@ export function getOwnReservationsValdation(
 }
 
 export function addReservationValidation(
-  req: Request<any, any, IReservation>,
+  req: Request<any, any, AddReservationBody>,
   res: Response,
   next: NextFunction
 ) {

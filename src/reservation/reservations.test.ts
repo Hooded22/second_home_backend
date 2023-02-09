@@ -34,6 +34,13 @@ const mockReservations: IReservation[] = [
   },
 ];
 
+const reservationData: AddReservationBody = {
+  customerId: "6284a8fbb89b3e197f39d391",
+  endTime: "2022-06-12T18:00:00",
+  startTime: "2022-06-08T18:00:00",
+  roomId: "6284a8fbb89b3e197f39d391",
+};
+
 jest.mock("../auth/middleware", () =>
   jest.fn((req, res, next) => {
     req.user = { _id: "123", role: "manager", iat: 1655034408 };
@@ -75,8 +82,8 @@ describe("Reservation CRUD", () => {
 
       expect(mockWhere).toHaveBeenCalledWith({ someFilter: "123" });
 
-      mockWhere.mockReset();
-      mockFind.mockReset();
+      mockWhere.mockRestore();
+      mockFind.mockRestore();
     });
     test("GET /reservation by user with 'customer' role --> 403, permission denied", async () => {
       (auth as jest.Mock).mockImplementationOnce((req, res, next) => {
@@ -93,7 +100,7 @@ describe("Reservation CRUD", () => {
 
       expect(result.body.error).toEqual("Error: Permission denied");
 
-      mockFind.mockReset();
+      mockFind.mockRestore();
     });
     test("GET /reservation/myReservations by user with 'customer' role should call ReservationModel.where() with user id", async () => {
       (auth as jest.Mock).mockImplementationOnce((req, res, next) => {
@@ -186,8 +193,8 @@ describe("Reservation CRUD", () => {
         mockReservationNewData
       );
 
-      mockfindById.mockReset();
-      mockfindByIdAndUpdate.mockReset();
+      mockfindById.mockRestore();
+      mockfindByIdAndUpdate.mockRestore();
     });
     test("PUT /reservation with id and data shoudl return status 200", async () => {
       const mockReservationNewData = {
@@ -212,8 +219,8 @@ describe("Reservation CRUD", () => {
         .query({ id: "123" })
         .expect(200);
 
-      mockfindById.mockReset();
-      mockfindByIdAndUpdate.mockReset();
+      mockfindById.mockRestore();
+      mockfindByIdAndUpdate.mockRestore();
     });
     test("PUT /reservation shoudl return 400 and error message when error occures", async () => {
       const mockfindByIdAndUpdate = jest.spyOn(
@@ -234,8 +241,8 @@ describe("Reservation CRUD", () => {
         "Incorect id. Item with this it don't exist in database"
       );
 
-      mockfindById.mockReset();
-      mockfindByIdAndUpdate.mockReset();
+      mockfindById.mockRestore();
+      mockfindByIdAndUpdate.mockRestore();
     });
   });
   describe("DELETE /reservation", () => {
@@ -263,20 +270,46 @@ describe("Reservation CRUD", () => {
 
       expect(mockFindByIdAndDelete).toHaveBeenCalledWith("123");
 
-      mockFindByIdAndDelete.mockReset();
-      mockFind.mockReset();
+      mockFindByIdAndDelete.mockRestore();
+      mockFind.mockRestore();
     });
+  });
+});
+
+describe("Reservation logic", () => {
+  const db = new MockDB();
+  beforeAll(async () => {
+    await db.setUp();
+  });
+
+  afterEach(async () => {
+    await db.dropCollections();
+  });
+
+  afterAll(async () => {
+    await db.dropDatabase();
+  });
+
+  test("POST /endReservation should retrun status code 200 and reservation with status CLOSED", async () => {
+    const saveRsult = await db.addItemToCollection<AddReservationBody>(
+      "reservationmodels",
+      reservationData
+    );
+    const reservationToEndId = saveRsult?.ops[0]._id;
+
+    console.log("ID: ", String(reservationToEndId));
+
+    const result = await request(app)
+      .post("/reservation/endReservation")
+      .query({ id: String(reservationToEndId) })
+      .expect(200);
+
+    expect(result.body.status).toEqual(ReservationStatuses.CLOSED);
   });
 });
 
 describe("Reservation model", () => {
   const db = new MockDB();
-  const reservationData: AddReservationBody = {
-    customerId: "6284a8fbb89b3e197f39d391",
-    endTime: "2022-06-12T18:00:00",
-    startTime: "2022-06-08T18:00:00",
-    roomId: "6284a8fbb89b3e197f39d391",
-  };
 
   beforeAll(async () => {
     await db.setUp();
@@ -315,4 +348,5 @@ describe("Reservation model", () => {
     });
   });
 });
+
 describe("Reservation validator", () => {});

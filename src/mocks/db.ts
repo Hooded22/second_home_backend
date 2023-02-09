@@ -31,4 +31,16 @@ export class MockDB {
       }
     }
   };
+
+  addItemToCollection = async <T>(collectionName: string, item: T) => {
+    if (this.mongo) {
+      const collection = mongoose.connection.collections[collectionName];
+
+      if (collection) {
+        return collection.insertOne(item);
+      } else {
+        throw new Error(`Collection with name ${collectionName} doesn't exist`);
+      }
+    }
+  };
 }

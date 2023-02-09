@@ -31,7 +31,6 @@ customerRouter.get("/withReservations", async (req: Request, res: Response) => {
       const reservations = await Reservation.find().where({
         customerId: customer._id,
       });
-      console.log("TEST: ", customer._id, reservations);
       if (reservations && reservations.length !== 0) {
         customersWithReservations.push({
           name: customer.name,

@@ -1,22 +1,24 @@
 import { Request, Response, Router } from "express";
 import errorMessages from "../assets/errorMessages";
+import ReservationController from "./controller";
 import {
-  addReservationValidation,
-  deleteReservationValidation,
-  getAllReservationsValidation,
-  getOwnReservationsValdation,
-  updateReservationValidation,
-} from "./controller";
-import Reservation from "./model";
-import User from "../users/model";
-import {
+  AddReservationBody,
   IReservation,
-  IReservationUpdateData,
   ReservationFilters,
+  ReservationStatuses,
 } from "./types";
 import auth from "../auth/middleware";
+import {
+  getAllReservationsValidation,
+  getOwnReservationsValdation,
+  addReservationValidation,
+  updateReservationValidation,
+  deleteReservationValidation,
+} from "./validators";
+import { validateId, validateQueryId } from "../globals/validators";
 
 const reservationRouter = Router();
+const reservationController = new ReservationController();
 
 reservationRouter.use("/", auth);
 
@@ -28,15 +30,12 @@ reservationRouter.get(
     res: Response
   ) => {
     try {
-      const reservations = req.query
-        ? await Reservation.find()
-            .where(req.query)
-            .populate("roomId")
-            .populate("customerId")
-        : await Reservation.find().populate("roomId");
+      const reservations = await reservationController.getReservation(
+        req.query
+      );
       return res.status(200).json(reservations);
     } catch (error: any) {
-      return res.status(400).send(error.message);
+      return res.status(400).send({ error: new Error(error).message });
     }
   }
 );
@@ -46,12 +45,12 @@ reservationRouter.get(
   getOwnReservationsValdation,
   async (req: Request, res: Response) => {
     try {
-      const reservations = Reservation.find().where({
-        customerId: req.user?._id,
-      });
+      const reservations = await reservationController.getMyReservations(
+        req.user?._id
+      );
       return res.status(200).json(reservations);
     } catch (error: any) {
-      return res.status(400).send(error.message);
+      return res.status(400).send({ error: new Error(error).message });
     }
   }
 );
@@ -59,13 +58,14 @@ reservationRouter.get(
 reservationRouter.post(
   "/",
   addReservationValidation,
-  async (req: Request<any, any, IReservation>, res: Response) => {
+  async (req: Request<any, any, AddReservationBody>, res: Response) => {
     try {
-      const reservation = new Reservation(req.body);
-      const savedReservation = await reservation.save();
+      const savedReservation = await reservationController.addReservation(
+        req.body
+      );
       return res.status(200).json(savedReservation);
-    } catch (error) {
-      return res.status(400).send({ error });
+    } catch (error: any) {
+      return res.status(400).send({ error: new Error(error).message });
     }
   }
 );
@@ -78,19 +78,15 @@ reservationRouter.put(
     res: Response
   ) => {
     try {
-      const result = await Reservation.findByIdAndUpdate(
+      const newReservation = await reservationController.updateReservation(
         req.query.id,
         req.body
       );
-      if (result) {
-        result.save();
-        const newReservation = await Reservation.findById(result._id);
-        return res.status(200).send(newReservation);
-      } else {
-        return res.status(400).send(errorMessages.incorectId);
-      }
+      return res.status(200).send(newReservation);
     } catch (error) {
-      return res.status(400).send(errorMessages.incorectId);
+      return res
+        .status(400)
+        .send({ error: new Error(errorMessages.incorectId).message });
     }
   }
 );
@@ -100,20 +96,30 @@ reservationRouter.delete(
   deleteReservationValidation,
   async (req: Request<any, any, any, { id: string }>, res: Response) => {
     try {
-      await Reservation.findByIdAndDelete(req.query.id);
-      const allReservations = await Reservation.find()
-        .populate("roomId")
-        .populate("customerId");
-      return res.status(200).json(allReservations);
-    } catch (error) {
-      console.error(error);
-      return res.status(400).send({ error: errorMessages.incorectId });
+      const result = await reservationController.deleteReservation(
+        req.query.id
+      );
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return res.status(400).send({ error: new Error(error).message });
     }
   }
 );
 
-reservationRouter.post("/endReservation");
-
-reservationRouter.post("/delayReservation");
+reservationRouter.post(
+  "/endReservation",
+  validateQueryId,
+  async (req: Request<any, any, any, { id: string }>, res: Response) => {
+    try {
+      const endedReservation = await reservationController.updateReservation(
+        req.query.id,
+        { status: ReservationStatuses.CLOSED }
+      );
+      return res.status(200).json(endedReservation);
+    } catch (error: any) {
+      return res.status(400).send({ error: new Error(error).message });
+    }
+  }
+);
 
 export default reservationRouter;

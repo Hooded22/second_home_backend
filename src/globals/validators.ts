@@ -12,3 +12,14 @@ export function validateId(
   }
   next();
 }
+
+export function validateQueryId(
+  req: Request<any, any, { id?: string }>,
+  res: Response,
+  next: NextFunction
+) {
+  if (!req.query.id || !isString(req.query.id)) {
+    res.send(404).send(errorMessages.incorectId);
+  }
+  next();
+}

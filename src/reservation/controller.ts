@@ -1,82 +1,69 @@
-import {
-  IReservation,
-  IReservationUpdateData,
-  ReservationFilters,
-} from "./types";
-import { NextFunction, Request, Response } from "express";
-import { ac } from "../config/appConfig";
-import { User } from "../../custom";
+import { AddReservationBody, IReservation, ReservationFilters } from "./types";
 import errorMessages from "../assets/errorMessages";
-import {
-  validateAddReservationData,
-  validateUpdateReservationData,
-} from "./validators";
-import RoomModel from "../room/model";
+import Reservation from "./model";
+import isEmpty from "lodash/isEmpty";
 
-export function getAllReservationsValidation(
-  req: Request<any, any, any, ReservationFilters | undefined>,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    console.log(req.user);
-
-    if (!ac.can(req.user?.role || "").read("reservation").granted)
-      throw new Error(errorMessages.permissionDenied);
-    next();
-  } catch (error: any) {
-    return res.sendStatus(403).send("Permission denied");
+export default class ReservationController {
+  async getReservation(filters?: ReservationFilters) {
+    try {
+      const withFilters = filters && !isEmpty(filters);
+      const reservations = withFilters
+        ? await Reservation.find()
+            .where(filters as ReservationFilters)
+            .populate("roomId")
+            .populate("customerId")
+        : await Reservation.find().populate("roomId");
+      return reservations;
+    } catch (error) {
+      throw new Error(error as string);
+    }
   }
-}
 
-export function getOwnReservationsValdation(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    if (!ac.can(req.user?.role || "").readOwn("reservations").granted)
-      throw new Error(errorMessages.permissionDenied);
-    next();
-  } catch (error: any) {
-    return res.send(400).send(error.message);
+  async getMyReservations(id?: string) {
+    try {
+      const reservations = await Reservation.find().where({
+        customerId: id,
+      });
+      return reservations;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
-}
 
-export function addReservationValidation(
-  req: Request<any, any, IReservation>,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    validateAddReservationData(req.body);
-    next();
-  } catch (error: any) {
-    return res.status(400).send(error.message);
+  async addReservation(data: AddReservationBody) {
+    try {
+      const reservation = new Reservation(data);
+      const savedReservation = await reservation.save();
+      return savedReservation;
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
-}
 
-export function updateReservationValidation(
-  req: Request<any, any, IReservationUpdateData>,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    validateUpdateReservationData(req.body);
-    next();
-  } catch (error: any) {
-    return res.status(400).send(error.message);
+  async updateReservation(id: string, data: Partial<IReservation>) {
+    try {
+      const result = await Reservation.findByIdAndUpdate(id, data);
+      if (result) {
+        result.save();
+        const newReservation = await Reservation.findById(result._id);
+        return newReservation;
+      } else {
+        throw new Error(errorMessages.incorectId);
+      }
+    } catch (error) {
+      throw new Error(errorMessages.incorectId);
+    }
   }
-}
 
-export async function deleteReservationValidation(
-  req: Request<any, any, any, { id: string }>,
-  res: Response,
-  next: NextFunction
-) {
-  if (!req.query.id) {
-    res.status(400).send({ error: errorMessages.incorectId });
-  } else {
-    next();
+  async deleteReservation(id: string) {
+    try {
+      await Reservation.findByIdAndDelete(id);
+      const allReservations = await Reservation.find()
+        .populate("roomId")
+        .populate("customerId");
+      return allReservations;
+    } catch (error) {
+      throw new Error(errorMessages.incorectId);
+    }
   }
 }

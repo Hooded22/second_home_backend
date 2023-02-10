@@ -1,3 +1,32 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Reservation:
+ *       type: object
+ *       required:
+ *         - customerId
+ *         - startTime
+ *         - endTime
+ *         - cost
+ *         - roomId
+ *       properties:
+ *         customerId:
+ *           type: string
+ *         startTime:
+ *           type: string
+ *           format: date
+ *           example: 2020-03-10T04:05:06.157Z
+ *         endTime:
+ *           type: string
+ *           format: date
+ *           example: 2020-03-10T04:05:06.157Z
+ *         cost:
+ *           type: number
+ *         roomId:
+ *           type: string
+ */
+
 import { NextFunction } from "express";
 import { model, Schema, Types, ObjectId } from "mongoose";
 import { DEFAULT_PRICE_FOR_NIGHT } from "../assets/constants";

@@ -9,6 +9,8 @@ import {
 import { NextFunction, Request, Response } from "express";
 import { ac } from "../config/appConfig";
 import errorMessages from "../assets/errorMessages";
+import ReservationModel from "./model";
+import { handleError } from "../globals/utils";
 
 const addReservationValidationSchema = Joi.object({
   customerId: Joi.string().required(),
@@ -31,6 +33,22 @@ export function validateAddReservationData(data: AddReservationBody) {
     throw new Error(error.details[0].message);
   }
   return;
+}
+
+async function validateRoomOccupation(roomId: string) {
+  try {
+    const roomReservations = await ReservationModel.find().where({ roomId });
+    if (
+      roomReservations.length > 0 &&
+      !roomReservations.some(
+        (reservation) => reservation.status === ReservationStatuses.CLOSED
+      )
+    ) {
+      throw new Error("Room is occupied").message;
+    }
+  } catch (error: any) {
+    throw new Error(error).message;
+  }
 }
 
 export function validateUpdateReservationData(data: IReservationUpdateData) {
@@ -69,16 +87,17 @@ export function getOwnReservationsValdation(
   }
 }
 
-export function addReservationValidation(
+export async function addReservationValidation(
   req: Request<any, any, AddReservationBody>,
   res: Response,
   next: NextFunction
 ) {
   try {
     validateAddReservationData(req.body);
+    await validateRoomOccupation(req.body.roomId);
     next();
   } catch (error: any) {
-    return res.status(400).send({ error: new Error(error).message });
+    return handleError(res, error);
   }
 }
 

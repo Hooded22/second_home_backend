@@ -15,5 +15,5 @@ export const handleError = async (
   error: any,
   status?: number
 ) => {
-  return res.status(status || 400).send({ error: new Error(error).message });
+  return res.status(status || 400).json({ error: new Error(error).message });
 };

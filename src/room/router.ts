@@ -10,6 +10,7 @@ import {
   updateRoomDataValidation,
 } from "./validation";
 import RoomController from "./controllers";
+import { handleError } from "../globals/utils";
 
 const roomRouter = Router();
 const roomController = new RoomController();
@@ -24,7 +25,7 @@ roomRouter.post(
       const result = await roomController.addRoom(req.body);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).send({ error });
+      return handleError(res, error);
     }
   }
 );
@@ -34,7 +35,7 @@ roomRouter.get("/", async (req: Request, res: Response) => {
     const result = await roomController.getRoom();
     return res.status(200).json(result);
   } catch (error) {
-    return res.status(400).send({ error: errorMessages.findError });
+    return handleError(res, errorMessages.findError);
   }
 });
 
@@ -49,7 +50,7 @@ roomRouter.put(
       const result = await roomController.updateRoom(req.query.id, req.body);
       return res.status(200).json(result);
     } catch (error: any) {
-      return res.status(400).send({ error: new Error(error).message });
+      return handleError(res, error);
     }
   }
 );
@@ -62,7 +63,7 @@ roomRouter.delete(
       const result = await roomController.deleteRoom(req.query.id);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).send({ error: errorMessages.incorectId });
+      return handleError(res, errorMessages.incorectId);
     }
   }
 );

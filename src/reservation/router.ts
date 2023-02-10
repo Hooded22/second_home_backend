@@ -15,7 +15,8 @@ import {
   updateReservationValidation,
   deleteReservationValidation,
 } from "./validators";
-import { validateId, validateQueryId } from "../globals/validators";
+import { validateQueryId } from "../globals/validators";
+import { handleError } from "../globals/utils";
 
 const reservationRouter = Router();
 const reservationController = new ReservationController();
@@ -35,7 +36,7 @@ reservationRouter.get(
       );
       return res.status(200).json(reservations);
     } catch (error: any) {
-      return res.status(400).send({ error: new Error(error).message });
+      return handleError(res, error);
     }
   }
 );
@@ -50,7 +51,7 @@ reservationRouter.get(
       );
       return res.status(200).json(reservations);
     } catch (error: any) {
-      return res.status(400).send({ error: new Error(error).message });
+      return handleError(res, error);
     }
   }
 );
@@ -65,7 +66,7 @@ reservationRouter.post(
       );
       return res.status(200).json(savedReservation);
     } catch (error: any) {
-      return res.status(400).send({ error: new Error(error).message });
+      return handleError(res, error);
     }
   }
 );
@@ -84,9 +85,7 @@ reservationRouter.put(
       );
       return res.status(200).send(newReservation);
     } catch (error) {
-      return res
-        .status(400)
-        .send({ error: new Error(errorMessages.incorectId).message });
+      return handleError(res, errorMessages.incorectId);
     }
   }
 );
@@ -101,7 +100,7 @@ reservationRouter.delete(
       );
       return res.status(200).json(result);
     } catch (error: any) {
-      return res.status(400).send({ error: new Error(error).message });
+      return handleError(res, error);
     }
   }
 );
@@ -117,7 +116,7 @@ reservationRouter.post(
       );
       return res.status(200).json(endedReservation);
     } catch (error: any) {
-      return res.status(400).send({ error: new Error(error).message });
+      return handleError(res, error);
     }
   }
 );

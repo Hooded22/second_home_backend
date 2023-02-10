@@ -8,6 +8,7 @@ import Customer from "./model";
 import Reservation from "../reservation/model";
 import { CustomerWithReservations, ICustomer } from "./types";
 import auth from "../auth/middleware";
+import { handleError } from "../globals/utils";
 
 const customerRouter = Router();
 
@@ -19,7 +20,7 @@ customerRouter.get("/", async (req: Request, res: Response) => {
     return res.status(200).json(customers);
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Internal error");
+    return handleError(res, errorMessages.internalError, 500);
   }
 });
 
@@ -43,7 +44,7 @@ customerRouter.get("/withReservations", async (req: Request, res: Response) => {
     return res.status(200).json(customersWithReservations);
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Internal error");
+    return handleError(res, errorMessages.internalError, 500);
   }
 });
 
@@ -57,7 +58,7 @@ customerRouter.post(
       res.status(200).json(customer);
     } catch (error) {
       console.error(error);
-      return res.status(500).send(errorMessages.internalError);
+      return handleError(res, errorMessages.internalError, 500);
     }
   }
 );
@@ -78,7 +79,7 @@ customerRouter.put(
         throw new Error(errorMessages.incorectId);
       }
     } catch (error: any) {
-      return res.status(400).send(error.message);
+      return handleError(res, error);
     }
   }
 );
@@ -90,7 +91,7 @@ customerRouter.delete(
       await Customer.findByIdAndDelete(req.query.id);
       return res.status(200).send("Delete successfully");
     } catch (error) {
-      return res.status(400).send(errorMessages.incorectId);
+      return handleError(res, errorMessages.incorectId);
     }
   }
 );

@@ -63,15 +63,13 @@ authRoute.post(
     res: Response
   ) => {
     try {
-      const user = User.findByIdAndUpdate(req.body.userId, {
-        role: req.body.newRole,
-      });
-      if (!user) {
-        return res.status(400).send(errorMessages.incorectId);
-      }
+      const user = await authController.grandUserPermissions(
+        req.body.userId,
+        req.body.newRole
+      );
       res.status(200).send({ message: "User granded successfully" });
     } catch (error) {
-      return res.status(400).send(errorMessages.incorectId);
+      return handleError(res, error);
     }
   }
 );

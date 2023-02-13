@@ -99,7 +99,7 @@ export async function validateGrandUserData(
       throw new Error(errorMessages.internalError);
     next();
   } catch (error: any) {
-    return res.status(400).send(new CustomResponse(null, error).json());
+    return handleError(res, error);
   }
 }
 

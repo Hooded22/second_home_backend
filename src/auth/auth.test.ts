@@ -2,9 +2,13 @@ import { MockDB } from "../mocks/db";
 import request from "supertest";
 import app from "../../app";
 import User from "../users/model";
+import { UserRoles } from "../users/types";
+import authMiddleware from "./middleware";
 
 jest.mock("./middleware", () =>
   jest.fn((req, res, next) => {
+    // const UserRolesImport = require("../users/types");
+    // req.user = { role: UserRolesImport.UserRoles.MANAGER };
     next();
   })
 );
@@ -20,6 +24,24 @@ const userLoginData = {
   email: userData.email,
   password: userData.password,
 };
+
+async function registerSampleUser() {
+  return await request(app)
+    .post("/auth/registration")
+    .send(userData)
+    .expect(200);
+}
+
+async function chageUserPermissions(role: UserRoles) {
+  const mockAuthMidleware = authMiddleware as jest.Mock;
+
+  mockAuthMidleware.mockImplementationOnce(
+    jest.fn((req, res, next) => {
+      req.user = { role };
+      next();
+    })
+  );
+}
 
 describe("Registration", () => {
   const db = new MockDB();
@@ -68,12 +90,6 @@ describe("Registration", () => {
 });
 
 describe("Login", () => {
-  async function registerSampleUser() {
-    return await request(app)
-      .post("/auth/registration")
-      .send(userData)
-      .expect(200);
-  }
   const db = new MockDB();
   beforeAll(async () => {
     await db.setUp();
@@ -145,5 +161,78 @@ describe("Login", () => {
       .expect(400);
 
     expect(result.body.error).toEqual("Email or password is wrong");
+  });
+});
+
+describe("Grand user permissions", () => {
+  const db = new MockDB();
+  beforeAll(async () => {
+    await db.setUp();
+  });
+
+  afterEach(async () => {
+    await db.dropCollections();
+  });
+
+  afterAll(async () => {
+    await db.dropDatabase();
+  });
+  test("POST /grandUser should update user with new role and return success message when data are correct", async () => {
+    await chageUserPermissions(UserRoles.MANAGER);
+    const user = await registerSampleUser();
+    const userId = user.body._id;
+
+    await request(app)
+      .post("/auth/grandUser")
+      .send({
+        userId: userId,
+        newRole: UserRoles.STUFF,
+      })
+      .expect(200);
+    const updatedUser = await User.findById(userId);
+
+    expect(updatedUser?.role).toEqual(UserRoles.STUFF);
+  });
+  test("POST /grandUser should return error when data are incorect", async () => {
+    await chageUserPermissions(UserRoles.MANAGER);
+    const user = await registerSampleUser();
+    const userId = user.body._id;
+    const grandUserDataWithoutNewRole = { userId: userId };
+
+    const result = await request(app)
+      .post("/auth/grandUser")
+      .send(grandUserDataWithoutNewRole)
+      .expect(400);
+
+    expect(result.body.error).toEqual("Error: Internal error");
+  });
+  test("POST /grandUser should return error when user has no permission to grand", async () => {
+    const user = await registerSampleUser();
+    const userId = user.body._id;
+
+    const result = await request(app)
+      .post("/auth/grandUser")
+      .send({
+        userId: userId,
+        newRole: UserRoles.STUFF,
+      })
+      .expect(400);
+
+    expect(result.body.error).toEqual("Error: Permission denied");
+  });
+  test("POST /grandUser should return error when user don't exist in db", async () => {
+    await chageUserPermissions(UserRoles.MANAGER);
+
+    const result = await request(app)
+      .post("/auth/grandUser")
+      .send({
+        userId: "asda123",
+        newRole: UserRoles.STUFF,
+      })
+      .expect(400);
+
+    expect(result.body.error).toEqual(
+      'CastError: Cast to ObjectId failed for value "asda123" (type string) at path "_id" for model "UserModel"'
+    );
   });
 });

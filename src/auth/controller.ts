@@ -1,6 +1,6 @@
 import { hash } from "bcrypt";
 import User from "../users/model";
-import { IUser, UserDetailsType, IUserSchema } from "../users/types";
+import { IUser, UserDetailsType, IUserSchema, UserRoles } from "../users/types";
 import { Secret, sign } from "jsonwebtoken";
 import config from "../config/appConfig";
 
@@ -41,5 +41,16 @@ export class AuthController {
       token,
       userDetails,
     };
+  }
+
+  async grandUserPermissions(userId: string, newRole: UserRoles) {
+    try {
+      const user = await User.findByIdAndUpdate(userId, {
+        role: newRole,
+      });
+      return user;
+    } catch (error: any) {
+      throw new Error(error).message;
+    }
   }
 }

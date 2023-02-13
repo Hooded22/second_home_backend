@@ -5,6 +5,7 @@ const errorMessages = {
   incorectId: "Incorect id. Item with this it don't exist in database",
   roomWithNumberAlreadyExist: "Room with this number already exist",
   findError: "Unable to find element",
+  userAlreadyExists: "User with this email exists in data base",
 };
 
 export const commonErrorSatusCodes = {

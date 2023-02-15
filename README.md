@@ -1,29 +1,23 @@
 # Second Home hotel app - REST API
 
-This project is my first REST API created in node.js with express.
-I'm using it to try new things with node.js.
+Show project made in Node.js with exppress.
+Project is kind of simple system for hotel website.
 
 ## What include 💻
 
-- Wrote with typescript
-- Simple auth system
-- JWT token authentication
-- Feedbacks CRUD
+- Simple CRUD with relations
+- Typescript
+- Auth system
 - Permissions and roles
-- Hotel rooms CRUD
-- Unit tests
+- Validations
+- Unit and integration tests
 
-## Coming soon 👨‍💻
+## What I've learned 🎓
 
-- Booking system
-- Using image storage
-- Integration tests
-
-## What taught me that 🎓
-
-- Node.js typescript configuration
+- Node.js with typescript configuration
 - Mongoose and mongoDB
 - Express
 - JWT token
 - Routes, controllers etc.
 - Project structure
+- Testing endpoints, models and controllers

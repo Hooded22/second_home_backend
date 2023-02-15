@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { Response } from "express";
 
 export const hashPassword = async (pass: string): Promise<string | null> => {
   try {
@@ -7,4 +8,12 @@ export const hashPassword = async (pass: string): Promise<string | null> => {
   } catch (error) {
     return null;
   }
+};
+
+export const handleError = async (
+  res: Response,
+  error: any,
+  status?: number
+) => {
+  return res.status(status || 400).json({ error: new Error(error).message });
 };

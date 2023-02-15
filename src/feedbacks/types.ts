@@ -10,6 +10,7 @@ export interface IFeedback {
 }
 
 export interface IFeedbackResponseData extends IFeedback {
+  _id: string;
   author: UserDetailsType;
 }
 export interface ICreateFeedbackRequest {

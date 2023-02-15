@@ -2,6 +2,7 @@ import Joi from "joi";
 import { ICreateFeedbackRequest } from "./types";
 import { Request, Response, NextFunction } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import { handleError } from "../globals/utils";
 
 const addFeedbackSchema = Joi.object<ICreateFeedbackRequest>({
   title: Joi.string().min(3).max(256).required(),
@@ -19,6 +20,8 @@ export async function validateAddFeedbackData(
   next: NextFunction
 ) {
   const { error } = addFeedbackValidation(req.body);
-  if (!!error) return res.status(400).send(error.details[0].message);
+  if (!!error) {
+    return handleError(res, error);
+  }
   next();
 }

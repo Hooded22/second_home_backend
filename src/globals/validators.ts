@@ -18,7 +18,7 @@ export function validateQueryId(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.query.id || !isString(req.query.id)) {
+  if (!req.query.id) {
     res.send(404).send(errorMessages.incorectId);
   }
   next();

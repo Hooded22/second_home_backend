@@ -1,75 +1,56 @@
 import express, { Request, Response } from "express";
-import {
-  IUser,
-  UserDetailsType,
-  UserLoginType,
-  UserRoles,
-} from "../users/types";
+import { IUser, UserLoginType, UserRoles } from "../users/types";
 import User from "../users/model";
-import {
-  checkUserExist,
-  validateLoginCredentials,
-  findUserByEmailAndPassword,
-  validateRegisterCredentials,
-  saveUserToken,
-  validateGrandUserData,
-} from "./controller";
-import { hash } from "bcrypt";
 import { RegisterResponseLocalsType } from "./types";
-import { Secret, sign } from "jsonwebtoken";
-import config, { ac } from "../config/appConfig";
 import errorMessages from "../assets/errorMessages";
 import auth from "./middleware";
-import CustomResponse from "../globals/CustomResponse";
+import { handleError } from "../globals/utils";
+import { AuthController } from "./controller";
+import {
+  checkUserExist,
+  findUserByEmailAndPassword,
+  validateGrandUserData,
+  validateLocaleUser,
+  validateLoginCredentials,
+  validateRegisterCredentials,
+} from "./validations";
 
 //TODO: Write tests
 
 const authRoute = express.Router();
+const authController = new AuthController();
 
-authRoute.use("/registration", validateRegisterCredentials);
-authRoute.use("/registration", checkUserExist);
-authRoute.post("/registration", async (req: Request<any, any, IUser>, res) => {
-  const { email, firstName, lastName, password } = req.body;
-  const hashedPassword = await hash(password, 12);
-  const newUser = new User({
-    ...req.body,
-    userName: `${firstName} ${lastName}`,
-    password: hashedPassword,
-  });
-  try {
-    const result = await newUser.save();
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json(error);
+authRoute.post(
+  "/registration",
+  validateRegisterCredentials,
+  checkUserExist,
+  async (req: Request<any, any, IUser>, res) => {
+    try {
+      const newUser = await authController.registerUser(req.body);
+      return res.status(200).json(newUser);
+    } catch (error) {
+      return handleError(res, error);
+    }
   }
-});
+);
 
-authRoute.use("/login", validateLoginCredentials);
-authRoute.use("/login", findUserByEmailAndPassword);
 authRoute.post(
   "/login",
+  validateLoginCredentials,
+  findUserByEmailAndPassword,
+  validateLocaleUser,
   async (
     req: Request<any, any, UserLoginType>,
     res: Response<any, RegisterResponseLocalsType>
   ) => {
-    if (!res.locals.user) return res.status(500).send("Unrecognized error!");
-    const tokenSecret: Secret = config.TOKEN_SECRET;
-    const token = sign(
-      { _id: res.locals.user._id, role: req.user?.role },
-      tokenSecret
-    );
-    const { firstName, lastName, email, _id, role } = res.locals.user;
-    const userDetails: UserDetailsType = {
-      firstName,
-      lastName,
-      email,
-      role,
-    };
-    saveUserToken(token, _id);
-    res.header("auth-token").json({
-      token,
-      userDetails,
-    });
+    try {
+      const userDetailsAndToken = await authController.loginUser(
+        res.locals.user!
+      );
+      return res.status(200).json(userDetailsAndToken);
+    } catch (error) {
+      return handleError(res, error);
+    }
   }
 );
 
@@ -82,15 +63,13 @@ authRoute.post(
     res: Response
   ) => {
     try {
-      const user = User.findByIdAndUpdate(req.body.userId, {
-        role: req.body.newRole,
-      });
-      if (!user) {
-        return res.status(400).send(errorMessages.incorectId);
-      }
+      const user = await authController.grandUserPermissions(
+        req.body.userId,
+        req.body.newRole
+      );
       res.status(200).send({ message: "User granded successfully" });
     } catch (error) {
-      return res.status(400).send(errorMessages.incorectId);
+      return handleError(res, error);
     }
   }
 );

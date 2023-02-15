@@ -3,8 +3,9 @@ import FeedbackController from "./controller";
 import { ICreateFeedbackRequest, IFeedbackFilters } from "./types";
 import { ResponseLocalsType } from "../globals/types";
 import auth from "../auth/middleware";
-import { validateId } from "../globals/validators";
+import { validateId, validateQueryId } from "../globals/validators";
 import { validateAddFeedbackData } from "./validator";
+import { handleError } from "../globals/utils";
 
 const feedbackRoute = Router();
 const feedbackController = new FeedbackController();
@@ -23,9 +24,9 @@ feedbackRoute.post(
 
     try {
       const resultData = await feedbackController.addFeedback(feedback, author);
-      res.status(200).json(resultData);
+      return res.status(200).json(resultData);
     } catch (error: any) {
-      res.status(400).json(error?.message);
+      return handleError(res, error);
     }
   }
 );
@@ -38,7 +39,7 @@ feedbackRoute.get(
       const feedbacks = await feedbackController.getFeedback(status);
       return res.status(200).json(feedbacks);
     } catch (error: any) {
-      return res.send(400).send(error?.message);
+      return handleError(res, error);
     }
   }
 );
@@ -51,7 +52,7 @@ feedbackRoute.post(
       const result = await feedbackController.confirmFeedback(req.body.id);
       return res.status(200).json(result);
     } catch (error: any) {
-      return res.status(400).send(error.message);
+      return handleError(res, error);
     }
   }
 );
@@ -64,20 +65,20 @@ feedbackRoute.post(
       const result = await feedbackController.rejectFeedback(req.body.id);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).send(error);
+      return handleError(res, error);
     }
   }
 );
 
 feedbackRoute.delete(
   "/",
-  validateId,
-  async (req: Request<any, any, { id: string }>, res: Response) => {
+  validateQueryId,
+  async (req: Request<any, any, any, { id: string }>, res: Response) => {
     try {
-      const result = feedbackController.deleteFeedback(req.body.id);
+      const result = feedbackController.deleteFeedback(req.query.id);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).send(error);
+      return handleError(res, error);
     }
   }
 );

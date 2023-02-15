@@ -8,8 +8,9 @@ export async function getFeedbackAuthor(
 ): Promise<UserDetailsType | null> {
   const user = await User.findOne({ _id: this.authorId });
   if (user) {
-    const { firstName, lastName, email } = user;
+    const { firstName, lastName, email, _id } = user;
     return {
+      _id,
       firstName,
       lastName,
       email,

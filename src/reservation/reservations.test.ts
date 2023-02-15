@@ -1,11 +1,14 @@
 import { MOCK_ROOMS } from "../mocks/mockData";
 import ReservationModel from "./model";
+import RoomModel from "../room/model";
 import { AddReservationBody, IReservation, ReservationStatuses } from "./types";
 import request from "supertest";
 import app from "../../app";
 import auth from "../auth/middleware";
 import { UserRoles } from "../users/types";
 import { MockDB } from "../mocks/db";
+import { IRoom, RoomStandard } from "../room/types";
+import User from "../users/model";
 
 const mockReservations: IReservation[] = [
   {
@@ -41,6 +44,22 @@ const reservationData: AddReservationBody = {
   roomId: "6284a8fbb89b3e197f39d391",
 };
 
+const roomData: IRoom = {
+  beds: 3,
+  floor: 1,
+  number: 112,
+  price: 100,
+  standard: RoomStandard.STANDARD,
+};
+
+const userData = {
+  userName: "Test",
+  lastName: "John",
+  firstName: "Doe",
+  email: "john.doe@gmai.com",
+  password: "test123",
+};
+
 jest.mock("../auth/middleware", () =>
   jest.fn((req, res, next) => {
     req.user = { _id: "123", role: "manager", iat: 1655034408 };
@@ -56,6 +75,17 @@ jest.mock("../assets/constants", () => {
 
 describe("Reservation CRUD", () => {
   const db = new MockDB();
+  beforeAll(async () => {
+    await db.setUp();
+  });
+
+  afterEach(async () => {
+    await db.dropCollections();
+  });
+
+  afterAll(async () => {
+    await db.dropDatabase();
+  });
   describe("GET /reservation", () => {
     test("GET /reservation --> 200, all data", async () => {
       const mockFind = jest.spyOn(ReservationModel, "find");
@@ -122,28 +152,16 @@ describe("Reservation CRUD", () => {
     });
   });
   describe("POST /reservation", () => {
-    test("POST /reservation/ with correct data should retrun data of added reservation", async () => {
-      const mockSave = jest.spyOn(ReservationModel.prototype, "save");
-      const dataToAdd: AddReservationBody = {
-        customerId: "123",
-        endTime: "2022-06-12T18:00:00",
-        startTime: "2022-06-10T18:00:00",
-        roomId: "123",
-      };
-
-      mockSave.mockReturnValueOnce(dataToAdd);
-
+    test("POST /reservation/ should retrun reservation with id and status OPEN", async () => {
       const result = await request(app)
         .post("/reservation")
         .set("Content-Type", "application/json")
-        .send(dataToAdd)
+        .send(reservationData)
         .expect(200);
 
-      expect(result.body).toEqual(dataToAdd);
-
-      mockSave.mockRestore();
+      expect(result.body._id).toBeTruthy;
+      expect(result.body.status).toEqual(ReservationStatuses.OPEN);
     });
-
     test("POST /reservation with incorect data should return 400 and error message", async () => {
       const dataToAdd = {
         endTime: "2022-06-12T18:00:00",
@@ -164,20 +182,46 @@ describe("Reservation CRUD", () => {
 
       mockSave.mockRestore();
     });
+    test("POST /reservation should return error when room has already reservation with status OPEN", async () => {
+      const room = await new RoomModel(roomData).save();
+      await new ReservationModel({
+        ...reservationData,
+        roomId: room._id,
+      }).save();
+      const newReservationData = {
+        ...reservationData,
+        roomId: room._id,
+      };
+
+      const result = await request(app)
+        .post("/reservation")
+        .send(newReservationData)
+        .expect(400);
+
+      expect(result.body.error).toEqual("Room is occupied");
+    });
+    test("POST /reservation should add reservation when room has already reservation with status CLOSED", async () => {
+      const room = await new RoomModel(roomData).save();
+      const firstReservation = await new ReservationModel({
+        ...reservationData,
+        roomId: room._id,
+      }).save();
+      const newReservationData = {
+        ...reservationData,
+        roomId: room._id,
+      };
+
+      await ReservationModel.findByIdAndUpdate(firstReservation._id, {
+        status: ReservationStatuses.CLOSED,
+      });
+      await request(app)
+        .post("/reservation")
+        .send(newReservationData)
+        .expect(200);
+    });
   });
   describe("PUT /reservation", () => {
-    beforeAll(async () => {
-      await db.setUp();
-    });
-
-    afterEach(async () => {
-      await db.dropCollections();
-    });
-
-    afterAll(async () => {
-      await db.dropDatabase();
-    });
-    test("PUT /reservation should shoudl return reservation with updated data", async () => {
+    test("PUT /reservation should return reservation with updated data", async () => {
       const mockReservationNewData = {
         startTime: "2020-02-10T17:00:00.000Z",
       };
@@ -188,7 +232,6 @@ describe("Reservation CRUD", () => {
         .send(mockReservationNewData)
         .query({ id: String(reservation._id) });
 
-      console.log("TEST: ", reservation);
       expect(result.body.startTime).toEqual(mockReservationNewData.startTime);
     });
     test("PUT /reservation with id and data shoudl return status 200", async () => {
@@ -218,15 +261,6 @@ describe("Reservation CRUD", () => {
       mockfindByIdAndUpdate.mockRestore();
     });
     test("PUT /reservation shoudl return 400 and error message when error occures", async () => {
-      const mockfindByIdAndUpdate = jest.spyOn(
-        ReservationModel,
-        "findByIdAndUpdate"
-      );
-      const mockfindById = jest.spyOn(ReservationModel, "findById");
-
-      mockfindByIdAndUpdate.mockImplementationOnce(() => false as any);
-      mockfindById.mockImplementation(() => true as any);
-
       const result = await request(app)
         .put("/reservation")
         .set("Content-Type", "application/json")
@@ -235,9 +269,6 @@ describe("Reservation CRUD", () => {
       expect(result.body.error).toEqual(
         "Incorect id. Item with this it don't exist in database"
       );
-
-      mockfindById.mockRestore();
-      mockfindByIdAndUpdate.mockRestore();
     });
   });
   describe("DELETE /reservation", () => {

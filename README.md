@@ -1,4 +1,4 @@
-# Second Home hotel app - REST API
+# Node.js and express show project
 
 Show project made in Node.js with exppress.
 Project is kind of simple system for hotel website.

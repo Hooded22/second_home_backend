@@ -74,6 +74,18 @@ jest.mock("../assets/constants", () => {
 });
 
 describe("Reservation CRUD", () => {
+  const db = new MockDB();
+  beforeAll(async () => {
+    await db.setUp();
+  });
+
+  afterEach(async () => {
+    await db.dropCollections();
+  });
+
+  afterAll(async () => {
+    await db.dropDatabase();
+  });
   describe("GET /reservation", () => {
     test("GET /reservation --> 200, all data", async () => {
       const mockFind = jest.spyOn(ReservationModel, "find");
@@ -140,18 +152,6 @@ describe("Reservation CRUD", () => {
     });
   });
   describe("POST /reservation", () => {
-    const db = new MockDB();
-    beforeAll(async () => {
-      await db.setUp();
-    });
-
-    afterEach(async () => {
-      await db.dropCollections();
-    });
-
-    afterAll(async () => {
-      await db.dropDatabase();
-    });
     test("POST /reservation/ should retrun reservation with id and status OPEN", async () => {
       const result = await request(app)
         .post("/reservation")
@@ -221,18 +221,6 @@ describe("Reservation CRUD", () => {
     });
   });
   describe("PUT /reservation", () => {
-    const db = new MockDB();
-    beforeAll(async () => {
-      await db.setUp();
-    });
-
-    afterEach(async () => {
-      await db.dropCollections();
-    });
-
-    afterAll(async () => {
-      await db.dropDatabase();
-    });
     test("PUT /reservation should return reservation with updated data", async () => {
       const mockReservationNewData = {
         startTime: "2020-02-10T17:00:00.000Z",

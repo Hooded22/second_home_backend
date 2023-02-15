@@ -19,14 +19,15 @@ export default class FeedbackController {
 
     try {
       const result = await feedbackToAdd.save();
-      const { title, description, rate, creationDate, status } = result;
+      const { title, description, rate, creationDate, status, _id } = result;
       const author = await result.getFeedbackAuthor();
 
       if (!author) {
-        throw new Error(errorMessages.userNotFound);
+        throw new Error(errorMessages.userNotFound).message;
       }
 
       const resultData: IFeedbackResponseData = {
+        _id,
         title,
         description,
         rate,
@@ -80,8 +81,8 @@ export default class FeedbackController {
     try {
       const result = await Feedback.findByIdAndDelete(id);
       return result;
-    } catch (error) {
-      throw new Error("Operatioj failure");
+    } catch (error: any) {
+      throw new Error(error).message;
     }
   }
 }

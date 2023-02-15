@@ -3,7 +3,7 @@ import FeedbackController from "./controller";
 import { ICreateFeedbackRequest, IFeedbackFilters } from "./types";
 import { ResponseLocalsType } from "../globals/types";
 import auth from "../auth/middleware";
-import { validateId } from "../globals/validators";
+import { validateId, validateQueryId } from "../globals/validators";
 import { validateAddFeedbackData } from "./validator";
 import { handleError } from "../globals/utils";
 
@@ -24,7 +24,7 @@ feedbackRoute.post(
 
     try {
       const resultData = await feedbackController.addFeedback(feedback, author);
-      res.status(200).json(resultData);
+      return res.status(200).json(resultData);
     } catch (error: any) {
       return handleError(res, error);
     }
@@ -72,10 +72,10 @@ feedbackRoute.post(
 
 feedbackRoute.delete(
   "/",
-  validateId,
-  async (req: Request<any, any, { id: string }>, res: Response) => {
+  validateQueryId,
+  async (req: Request<any, any, any, { id: string }>, res: Response) => {
     try {
-      const result = feedbackController.deleteFeedback(req.body.id);
+      const result = feedbackController.deleteFeedback(req.query.id);
       return res.status(200).json(result);
     } catch (error) {
       return handleError(res, error);
